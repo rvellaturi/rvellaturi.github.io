@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Rajanikant Vellaturi | Data & AI Leader</title>
+  <meta name="description" content="Senior Data & AI professional with 20+ years building large-scale data platforms and operationalized AI systems." />
+
+  <!--
+    Single-file site (index.html). Just drop this into a GitHub Pages repo.
+    Tip: Replace links (DZone/Medium/etc.) with your preferred URLs.
+  -->
+
+  <style>
+    :root{
+      --bg: #0b1020;
+      --bg2:#0f1630;
+      --card:#0f1a3a;
+      --text:#eaf0ff;
+      --muted:#b8c4e6;
+      --line: rgba(255,255,255,.10);
+      --accent: #7aa2ff;
+      --accent2:#8ff0ff;
+      --shadow: 0 16px 50px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#f6f7fb;
+        --bg2:#ffffff;
+        --card:#ffffff;
+        --text:#141a2a;
+        --muted:#46506b;
+        --line: rgba(20,26,42,.12);
+        --accent:#2b59ff;
+        --accent2:#00a2b8;
+        --shadow: 0 14px 40px rgba(9,20,50,.10);
+      }
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color:var(--text);
+      background:
+        radial-gradient(1200px 700px at 15% 10%, rgba(122,162,255,.28), transparent 60%),
+        radial-gradient(900px 600px at 85% 20%, rgba(143,240,255,.22), transparent 55%),
+        radial-gradient(900px 600px at 75% 90%, rgba(122,162,255,.18), transparent 55%),
+        linear-gradient(180deg, var(--bg), var(--bg2));
+      line-height:1.55;
+    }
+
+    a{color:inherit; text-decoration:none}
+    a:hover{opacity:.92}
+
+    .wrap{max-width:1050px; margin:0 auto; padding:28px 18px 70px}
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(0,0,0,.18), rgba(0,0,0,0));
+      border-bottom:1px solid var(--line);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      max-width:1050px;
+      margin:0 auto;
+      padding:14px 18px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:650;
+      letter-spacing:.2px;
+    }
+    .dot{
+      width:10px; height:10px; border-radius:999px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 6px rgba(122,162,255,.14);
+    }
+    .links{display:flex; flex-wrap:wrap; gap:10px; justify-content:flex-end}
+    .chip{
+      font-size:13px;
+      padding:8px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.04);
+    }
+    .chip:hover{border-color: rgba(122,162,255,.55)}
+
+    .hero{
+      margin-top:26px;
+      padding:28px;
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .hero:before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(800px 400px at 20% 10%, rgba(122,162,255,.22), transparent 55%),
+                  radial-gradient(600px 300px at 90% 20%, rgba(143,240,255,.18), transparent 60%);
+      pointer-events:none;
+    }
+    .hero > *{position:relative}
+    .kicker{color:var(--muted); font-weight:600; letter-spacing:.3px; font-size:13px; text-transform:uppercase}
+    h1{margin:10px 0 6px; font-size:clamp(30px, 4vw, 44px); line-height:1.10}
+    .subtitle{color:var(--muted); font-size:16px; max-width:70ch}
+
+    .ctaRow{display:flex; flex-wrap:wrap; gap:10px; margin-top:16px}
+    .btn{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.05);
+      font-weight:650;
+      font-size:14px;
+    }
+    .btn.primary{
+      border-color: rgba(122,162,255,.55);
+      background: linear-gradient(135deg, rgba(122,162,255,.22), rgba(143,240,255,.14));
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+
+    .card{
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+      box-shadow: var(--shadow);
+    }
+    .card .in{padding:18px}
+
+    .sectionTitle{
+      display:flex; align-items:center; justify-content:space-between;
+      gap:12px;
+      margin:0 0 10px;
+    }
+    .sectionTitle h2{margin:0; font-size:18px}
+    .pill{
+      font-size:12px;
+      color:var(--muted);
+      padding:6px 10px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background: rgba(255,255,255,.03);
+    }
+
+    .list{margin:10px 0 0; padding:0; list-style:none; display:flex; flex-direction:column; gap:12px}
+    .item{padding:12px; border:1px solid var(--line); border-radius:14px; background: rgba(255,255,255,.03)}
+    .item strong{display:block; font-size:14px}
+    .item .meta{color:var(--muted); font-size:13px; margin-top:2px}
+    .item ul{margin:10px 0 0 18px; color:var(--muted)}
+    .item ul li{margin:6px 0}
+
+    .twoCol{display:grid; grid-template-columns: 1fr 1fr; gap:12px}
+    @media (max-width: 650px){ .twoCol{grid-template-columns:1fr} }
+
+    .skills{display:flex; flex-wrap:wrap; gap:8px}
+    .skill{
+      font-size:13px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      color:var(--muted);
+    }
+
+    .footer{
+      margin-top:18px;
+      color:var(--muted);
+      font-size:13px;
+      text-align:center;
+    }
+
+    .anchor{scroll-margin-top: 90px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Rajanikantarao Vellaturi</span>
+      </div>
+      <div class="links" aria-label="Site navigation">
+        <a class="chip" href="#about">About</a>
+        <a class="chip" href="#experience">Experience</a>
+        <a class="chip" href="#publications">Publications</a>
+        <a class="chip" href="#recognition">Recognition</a>
+        <a class="chip" href="#contact">Contact</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero" aria-label="Hero">
+      <div class="kicker">Data & AI • Customer Experience • Platforms</div>
+      <h1>Senior Data & AI leader building production-scale systems that move the needle.</h1>
+      <p class="subtitle">
+        20+ years delivering large-scale data platforms and AI-driven workflows across Snowflake, Apple, Kaiser Permanente, and Cloudera.
+        Known for operationalizing AI in real business processes and turning noisy feedback into executive-ready insights.
+      </p>
+
+      <div class="ctaRow">
+        <a class="btn primary" href="mailto:rajani.vellaturi@gmail.com" title="Email">
+          <span aria-hidden="true">✉️</span>
+          <span>Email</span>
+        </a>
+        <a class="btn" href="https://www.linkedin.com/in/rajanikant-vellaturi/" target="_blank" rel="noreferrer" title="LinkedIn">
+          <span aria-hidden="true">in</span>
+          <span>LinkedIn</span>
+        </a>
+        <a class="btn" href="#experience" title="Jump to experience">
+          <span aria-hidden="true">↓</span>
+          <span>View Experience</span>
+        </a>
+      </div>
+
+      <div class="grid" style="margin-top:18px;">
+        <div class="card">
+          <div class="in">
+            <div class="sectionTitle">
+              <h2 id="about" class="anchor">About</h2>
+              <span class="pill">Cary, North Carolina</span>
+            </div>
+            <p style="margin:0; color:var(--muted)">
+              I specialize in building durable data foundations and applying AI where it actually sticks: automated classification,
+              decision support, and customer experience operations.
+              I’ve led end-to-end initiatives—from data modeling and pipelines to executive dashboards and operational adoption.
+            </p>
+            <div class="twoCol" style="margin-top:12px;">
+              <div class="item">
+                <strong>Current focus</strong>
+                <div class="meta">Operational AI for Support (Snowflake)</div>
+                <ul>
+                  <li>Weekly CSAT classification at scale</li>
+                  <li>Leadership dashboards for service gaps</li>
+                  <li>Streamlined incident & release comms workflows</li>
+                </ul>
+              </div>
+              <div class="item">
+                <strong>Industry breadth</strong>
+                <div class="meta">Tech + Healthcare + Enterprise</div>
+                <ul>
+                  <li>Apple Music analytics & aggregates</li>
+                  <li>Kaiser enterprise landing zone</li>
+                  <li>Cloudera partner support integrations</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <aside class="card" aria-label="Highlights">
+          <div class="in">
+            <div class="sectionTitle">
+              <h2>Highlights</h2>
+              <span class="pill">Quick scan</span>
+            </div>
+            <ul class="list">
+              <li class="item">
+                <strong>Operationalized AI in Support</strong>
+                <div class="meta">Classifies 5,000+ CSAT comments/week; dashboards for 12,000+ enterprise customers</div>
+              </li>
+              <li class="item">
+                <strong>Enterprise-scale data platforms</strong>
+                <div class="meta">Landing zones, pipelines, integrations, ML feature foundations</div>
+              </li>
+              <li class="item">
+                <strong>Recognition beyond role</strong>
+                <div class="meta">Judging/reviewing (NeurIPS, IEEE, Webby Awards), publications, advisory board member</div>
+              </li>
+            </ul>
+
+            <div style="margin-top:14px;">
+              <div style="font-size:13px; color:var(--muted); margin-bottom:8px; font-weight:650;">Core skills</div>
+              <div class="skills">
+                <span class="skill">Snowflake</span>
+                <span class="skill">SQL</span>
+                <span class="skill">Python</span>
+                <span class="skill">Cortex LLMs</span>
+                <span class="skill">Data Warehousing</span>
+                <span class="skill">Kafka</span>
+                <span class="skill">Spark</span>
+                <span class="skill">AWS</span>
+                <span class="skill">Airflow</span>
+                <span class="skill">ML Pipelines</span>
+                <span class="skill">REST APIs</span>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;" aria-label="Experience">
+      <div class="in">
+        <div class="sectionTitle">
+          <h2 id="experience" class="anchor">Experience</h2>
+          <span class="pill">Selected impact</span>
+        </div>
+
+        <div class="item">
+          <strong>Snowflake — Senior Support Communications Manager</strong>
+          <div class="meta">Apr 2024 – Present</div>
+          <ul>
+            <li><b>CSAT Automation (Cortex + Tasks):</b> designed and deployed an AI workflow to classify customer feedback into service-quality categories; automated weekly processing and leadership dashboards.</li>
+            <li><b>Support Communications Framework:</b> built an approval/coordination framework for behavior-change releases and critical incident communications across cross-functional teams.</li>
+            <li><b>Red Alerts Dashboard (Streamlit):</b> delivered an internal dashboard to surface low-CSAT patterns, escalations, and reopens for faster intervention.</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <strong>Cloudera — Senior Staff TPM, Partner Support</strong>
+          <div class="meta">Jan 2019 – Apr 2024</div>
+          <ul>
+            <li><b>IBM–Cloudera B2B case integration:</b> led technical design of an API-based synchronization layer for support workflows and escalations.</li>
+            <li><b>Partner Support Management:</b> contributed to standardized workflows and access controls across 400+ global partners.</li>
+            <li><b>CVE coordination:</b> helped design cross-org tracking and response workflows with engineering and partners.</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <strong>Kaiser Permanente (via Cognizant) — Senior Manager / Lead Architect</strong>
+          <div class="meta">Oct 2014 – Apr 2016</div>
+          <ul>
+            <li>Core architect for an enterprise big data landing zone integrating clinical and enterprise sources for analytics at scale.</li>
+          </ul>
+        </div>
+
+        <div class="item">
+          <strong>Apple (via Accenture) — Associate Manager / Data Engineer</strong>
+          <div class="meta">Sep 2013 – Oct 2014</div>
+          <ul>
+            <li>Built internal data aggregates and pipelines supporting Apple Music analytics and ML-driven recommendations; contributed to workload migrations and performance optimization.</li>
+          </ul>
+        </div>
+
+        <div style="margin-top:10px; color:var(--muted); font-size:13px">
+          Want a one-page PDF? Add your resume PDF to this repo and link it as <code>/resume.pdf</code>.
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;" aria-label="Publications">
+      <div class="in">
+        <div class="sectionTitle">
+          <h2 id="publications" class="anchor">Publications</h2>
+          <span class="pill">Selected writing</span>
+        </div>
+
+        <div class="twoCol">
+          <div class="item">
+            <strong>DZone & industry publications</strong>
+            <div class="meta">Editor-reviewed technical articles</div>
+            <ul>
+              <li><a href="https://dzone.com/articles/why-data-engineering-is-key-for-model-success" target="_blank" rel="noreferrer">The Hidden Backbone of AI: Why Data Engineering Is Key for Model Success</a></li>
+              <li><a href="https://dzone.com/articles/automating-sentiment-analysis-using-snowflake-cortex" target="_blank" rel="noreferrer">Automating Sentiment Analysis Using Snowflake Cortex</a></li>
+              <li><a href="https://dzone.com/articles/key-features-of-apache-iceberg-for-data-lakes" target="_blank" rel="noreferrer">Top 5 Key Features of Apache Iceberg for Modern Data Lakes</a></li>
+              <li><a href="https://dzone.com/articles/ai-project-failure-data-product-mindset" target="_blank" rel="noreferrer">Why Data Engineers Must Think Like Product Managers</a></li>
+              <li><a href="https://allthingsopen.org/articles/ai-driven-customer-experience-best-practices" target="_blank" rel="noreferrer">5 Best Practices for AI-Driven Customer Experience</a></li>
+            </ul>
+          </div>
+
+          <div class="item">
+            <strong>Medium — Data Engineer Things</strong>
+            <div class="meta">Popular articles & practical guides</div>
+            <ul>
+              <li><a href="https://blog.dataengineerthings.org/data-partitioning-and-bucketing-examples-and-best-practices-15bcadd35479" target="_blank" rel="noreferrer">Data Partitioning and Bucketing: Examples and Best Practices</a></li>
+              <li><a href="https://blog.dataengineerthings.org/data-pipeline-vs-etl-understanding-the-key-differences-f71bde598387" target="_blank" rel="noreferrer">Data Pipeline vs ETL: Understanding the Key Differences</a></li>
+              <li><a href="https://medium.com/%40raj.busint/10-best-practices-for-writing-sql-queries-for-data-analysis-09f41870c1f0" target="_blank" rel="noreferrer">10 Best Practices for Writing SQL Queries for Data Analysis</a></li>
+              <li><a href="https://blog.dataengineerthings.org/mastering-data-quality-10-essential-checks-with-real-world-examples-and-7-best-practices-fa303f2ae42b" target="_blank" rel="noreferrer">Mastering Data Quality: 10 Essential Checks with Real-World Examples and 7 Best Practices</a></li>
+              <li><a href="https://blog.dataengineerthings.org/choosing-the-right-big-data-file-format-avro-vs-parquet-vs-orc-c868ffbe5a4e" target="_blank" rel="noreferrer">Choosing the Right Big Data File Format: Avro vs. Parquet vs. ORC</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;" aria-label="Recognition">
+      <div class="in">
+        <div class="sectionTitle">
+          <h2 id="recognition" class="anchor">Recognition & Leadership</h2>
+          <span class="pill">Judging • Memberships • Awards</span>
+        </div>
+
+        <div class="twoCol">
+          <div class="item">
+            <strong>Judging & evaluation</strong>
+            <div class="meta">Selected roles</div>
+            <ul>
+              <li>Reviewer — NeurIPS DynaFront Workshop</li>
+              <li>Judge — Cortex AI Hackathon</li>
+              <li><a href="https://www.webbyawards.com/about/judges/" target="_blank" rel="noreferrer">Associate Academy Member & Judge — Webby Awards (IADAS)</a></li>
+              <li>Organizing Committee Member & Poster Reviewer — IEEE CTU North America Summit</li>
+            </ul>
+          </div>
+
+          <div class="item">
+            <strong>Appointments & memberships</strong>
+            <div class="meta">Professional community</div>
+            <ul>
+              <li><a href="https://ieeesystemscouncil.org/activities/member-services-activities/senior-members" target="_blank" rel="noreferrer">IEEE Senior Member</a></li>
+              <li><a href="https://www.iadas.net/membership/" target="_blank" rel="noreferrer">Member — International Academy of Digital Arts and Sciences (IADAS)</a></li>
+              <li><a href="https://cet.ecu.edu/csci/about-us/industrial-advisory-board/" target="_blank" rel="noreferrer">Computer Science Industry Advisory Board — East Carolina University</a></li>
+            </ul>
+          </div>
+
+          <div class="item">
+            <strong>Awards</strong>
+            <div class="meta">Recognition for impact</div>
+            <ul>
+              <li>ADPList Top 50 Mentor (3×)</li>
+              <li>Project of the Month — Apple</li>
+              <li>Certificate of Excellence & Medal — Kaiser Permanente</li>
+              <li>Cloudera Code Award — Commitment Category</li>
+            </ul>
+          </div>
+
+          <div class="item">
+            <strong>Invited talks</strong>
+            <div class="meta">Workshops & conferences</div>
+            <ul>
+              <li>IEEE Computer Society — AI Dev Hack Workshop</li>
+              <li><a href="https://www.conf42.com/DevSecOps_2025_Rajanikant_Vellaturi_start_scale_succeed" target="_blank" rel="noreferrer">Conf42 DevSecOps 2025 — AI-Driven Customer Experience</a></li>
+              <li>Build AI Conference — Five Best Practices for AI-Driven Customer Experience</li>
+              <li>East Carolina University — Career & Technology Panel</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" style="margin-top:16px;" aria-label="Contact">
+      <div class="in">
+        <div class="sectionTitle">
+          <h2 id="contact" class="anchor">Contact</h2>
+          <span class="pill">Let’s connect</span>
+        </div>
+        <div class="twoCol">
+          <div class="item">
+            <strong>Email</strong>
+            <div class="meta"><a href="mailto:rajani.vellaturi@gmail.com">rajani.vellaturi@gmail.com</a></div>
+          </div>
+          <div class="item">
+            <strong>LinkedIn</strong>
+            <div class="meta"><a href="https://www.linkedin.com/in/rajanikant-vellaturi/" target="_blank" rel="noreferrer">/in/rajanikant-vellaturi</a></div>
+          </div>
+        </div>
+        <p style="margin-top:12px; color:var(--muted)">
+          If you want a cleaner URL, create a GitHub Pages site at <code>yourusername.github.io</code>.
+        </p>
+      </div>
+    </section>
+
+    <div class="footer">
+      © <span id="y"></span> Rajanikant Vellaturi • Built with GitHub Pages
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
