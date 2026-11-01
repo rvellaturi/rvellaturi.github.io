@@ -61,11 +61,12 @@ h1 .range{color:var(--muted);font-weight:500}
 .note{font-size:13px;color:var(--muted);margin:0}
 
 /* timeline strip */
-.strip{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-block:8px 18px;-webkit-overflow-scrolling:touch}
+.strip{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-block:14px 18px;-webkit-overflow-scrolling:touch}
 .grid{display:grid;grid-template-columns:repeat(21,var(--col));column-gap:0;width:max-content;position:relative}
-.band{height:15px;border-radius:3px;margin-block:3px}
-.band span{position:sticky;left:8px;display:inline-block;padding-left:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;white-space:nowrap;line-height:15px;color:var(--bg);font-weight:600}
-.band.fade-l span,.band.fade-lr span{margin-left:56px}
+.band{height:26px;border-radius:4px;margin-block:5px;display:flex;align-items:center}
+.band span{position:sticky;left:8px;display:inline-block;padding:0 10px;font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;white-space:nowrap;line-height:26px;color:var(--bg);font-weight:600}
+.band span em{font-style:normal;font-weight:400;opacity:.85;margin-left:6px}
+.band.fade-l span,.band.fade-lr span{margin-left:64px}
 .band.etl{background:var(--etl)} .band.hadoop{background:var(--hadoop)} .band.cloud{background:var(--cloud)} .band.lake{background:var(--lake)}
 .band.fade-l{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 60px);mask-image:linear-gradient(90deg,transparent 0,#000 60px)}
 .band.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 60px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 60px),transparent)}
@@ -446,7 +447,7 @@ BANDS.forEach(([e,a,b,fade],i)=>{
   d.className="band "+e+" fade-"+fade;
   d.style.gridColumn=(a-2006+1)+" / "+(b-2006+2);
   d.style.gridRow=String(i+1);
-  d.innerHTML='<span>'+esc(ERAS[e].name)+'</span>';
+  d.innerHTML='<span>'+esc(ERAS[e].name)+'<em>~'+a+'–'+(b===2026?'now':b)+'</em></span>';
   d.title=ERAS[e].name+" (broad trend, roughly "+a+"–"+(b===2026?"present":b)+")";
   grid.appendChild(d);
 });
