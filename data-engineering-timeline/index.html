@@ -537,7 +537,9 @@ function move(d){const v=visible(); let p=v.indexOf(current); if(p<0)p=0; const 
 function select(i, scrollDetail){
   current=i; const m=M[i], E=ERAS[m.era];
   btns.forEach((b,j)=>{b.setAttribute("aria-selected", j===i?"true":"false"); b.tabIndex = j===i?0:-1});
-  btns[i].scrollIntoView({block:"nearest",inline:"nearest",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  /* scroll only the timeline strip sideways, never the page */
+  { const b=btns[i], l=b.offsetLeft, r=l+b.offsetWidth, vl=strip.scrollLeft, vr=vl+strip.clientWidth;
+    if(l<vl||r>vr) strip.scrollTo({left:Math.max(0,l-16),behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); }
   const v=visible(), p=v.indexOf(i);
   const prev = p>0? v[p-1] : null, next = p>=0 && p<v.length-1 ? v[p+1] : null;
   detail.setAttribute("aria-labelledby","yr-"+m.y);
