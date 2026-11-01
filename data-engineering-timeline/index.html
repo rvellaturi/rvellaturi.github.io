@@ -195,6 +195,24 @@ tbody th{font-family:var(--mono);font-size:12.5px;font-weight:600;width:16%}
   .act{scroll-snap-align:start}
   .acts h2.kicker::after{content:" · swipe";color:var(--muted)}
 }
+/* sticky year bar + reading flow */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top, 0px);z-index:10;background:var(--bg)}
+.reader{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin-top:4px}
+.reader>*{min-width:0}
+.minibar{position:sticky;top:env(safe-area-inset-top, 0px);z-index:6;background:var(--bg);display:flex;align-items:center;gap:6px;padding-block:8px;border-bottom:1px solid var(--line)}
+.mb-years{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;scroll-behavior:smooth;padding-block:2px}
+.mb-years::-webkit-scrollbar{display:none}
+.mb-pill{flex:none;display:inline-flex;align-items:center;gap:5px;font:600 12.5px/1 var(--mono);font-variant-numeric:tabular-nums;padding:6px 9px;border-radius:999px;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer}
+.mb-pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--c)}
+.mb-pill:hover{border-color:var(--line);color:var(--ink)}
+.mb-pill[aria-current="true"]{background:var(--ink);color:var(--bg)}
+.mb-pill.dim{opacity:.35}
+.mb-arrow{flex:none;font:600 14px/1 var(--mono);width:34px;height:32px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.mb-arrow[disabled]{opacity:.4;cursor:default}
+.detail{scroll-margin-top:calc(env(safe-area-inset-top, 0px) + 60px);margin-top:12px}
+.navhint{font-size:12.5px;color:var(--muted);align-self:center}
+@media (hover:none){.navhint .keys{display:none}}
+@media (hover:hover){.navhint .swipe{display:none}}
 footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:grid;gap:6px}
 
 @media (max-width:760px){
@@ -244,7 +262,14 @@ footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px
   </div>
   <p class="note bandnote"><strong>Note:</strong> Era bands are broad trends with soft edges. Adoption varied a lot: plenty of teams ran Informatica and Teradata well into the cloud era, and many never ran Hadoop at all.</p>
 
-  <article class="detail" id="detail" role="tabpanel" aria-live="polite"></article>
+  <div class="reader">
+    <nav class="minibar" id="minibar" aria-label="Jump to year">
+      <button class="mb-arrow" id="mbPrev" aria-label="Previous year">←</button>
+      <div class="mb-years" id="mbYears"></div>
+      <button class="mb-arrow" id="mbNext" aria-label="Next year">→</button>
+    </nav>
+    <article class="detail" id="detail" role="tabpanel" aria-live="polite"></article>
+  </div>
 
   <section class="tvn" aria-labelledby="tvn-h">
     <div class="kicker">Then vs. Now</div>
@@ -607,7 +632,7 @@ const btns = M.map((m,i)=>{
 });
 
 function visible(){return M.map((m,i)=>i).filter(i=>filter==="all"||M[i].cats.includes(filter))}
-function move(d){const v=visible(); let p=v.indexOf(current); if(p<0)p=0; const n=v[Math.max(0,Math.min(v.length-1,p+d))]; select(n,false); btns[n].focus()}
+function move(d){const v=visible(); let p=v.indexOf(current); if(p<0)p=0; const n=v[Math.max(0,Math.min(v.length-1,p+d))]; select(n, detail.getBoundingClientRect().top<70); btns[n].focus({preventScroll:true})}
 
 function select(i, scrollDetail){
   current=i; const m=M[i], E=ERAS[m.era];
@@ -630,12 +655,13 @@ function select(i, scrollDetail){
      '<div class="f wide"><h3>Cause and effect</h3><div class="chain">'+chainHTML(m)+'</div></div>'+
      '<div class="f wide sources"><h3>Sources</h3><ul>'+m.src.map(s=>'<li><a href="'+esc(s[1])+'" target="_blank" rel="noopener">'+esc(s[0])+'</a></li>').join("")+'</ul></div>'+
    '</div>'+
-   '<div class="prevnext"><button id="prevBtn" '+(prev===null?'disabled':'')+'>← '+(prev!==null?M[prev].y:'')+'</button><button id="nextBtn" '+(next===null?'disabled':'')+'>'+(next!==null?M[next].y:'')+' →</button></div>';
+   '<div class="prevnext"><button id="prevBtn" '+(prev===null?'disabled':'')+'>← '+(prev!==null?M[prev].y:'')+'</button><span class="navhint"><span class="keys">Tip: use your ← → keys</span><span class="swipe">Tip: swipe left or right</span></span><button id="nextBtn" '+(next===null?'disabled':'')+'>'+(next!==null?M[next].y:'')+' →</button></div>';
   detail.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>select(M.findIndex(x=>x.y===+b.dataset.go),true));
   document.getElementById("prevBtn").onclick=()=>{if(prev!==null)select(prev,true)};
   document.getElementById("nextBtn").onclick=()=>{if(next!==null)select(next,true)};
   try{ if(location.hash!=="#y"+m.y) history.replaceState(null,"","#y"+m.y) }catch(e){}
-  if(scrollDetail){ const r=detail.getBoundingClientRect(); if(r.top>innerHeight*0.6||r.top<0) detail.scrollIntoView({block:"start",behavior:"smooth"}) }
+  if(typeof syncPills==="function") syncPills();
+  if(scrollDetail){ const r=detail.getBoundingClientRect(); if(r.top>innerHeight*0.6||r.top<70) detail.scrollIntoView({block:"start",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}) }
 }
 
 /* Filters */
@@ -664,6 +690,24 @@ if(AUTHOR.name){
   by.hidden=false;
   document.getElementById("footby").innerHTML='© 2026 '+esc(AUTHOR.name)+(AUTHOR.linkedin?' · <a href="'+esc(AUTHOR.linkedin)+'" target="_blank" rel="noopener">LinkedIn</a>':'');
 }
+
+/* Mini year bar, keyboard and swipe navigation */
+const mbYears=document.getElementById("mbYears");
+const pills=M.map((m,i)=>{const b=document.createElement("button"); b.className="mb-pill"; b.textContent=m.y; b.style.setProperty("--c",ERAS[m.era].c); b.setAttribute("aria-label",m.y+": "+m.title); b.addEventListener("click",()=>select(i,true)); mbYears.appendChild(b); return b;});
+function step(d){const v=visible(); let p=v.indexOf(current); if(p<0)p=0; const n=v[Math.max(0,Math.min(v.length-1,p+d))]; if(n!==current) select(n,true);}
+document.getElementById("mbPrev").onclick=()=>step(-1);
+document.getElementById("mbNext").onclick=()=>step(1);
+document.addEventListener("keydown",e=>{
+  if(e.defaultPrevented||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey) return;
+  const t=e.target; if(t&&(t.closest&&(t.closest(".strip")||t.closest("input,textarea,select,[contenteditable]")))) return;
+  if(e.key==="ArrowRight"){e.preventDefault(); step(1)} else if(e.key==="ArrowLeft"){e.preventDefault(); step(-1)}
+});
+let tx=null,ty=null;
+detail.addEventListener("touchstart",e=>{const t=e.changedTouches[0]; tx=t.clientX; ty=t.clientY;},{passive:true});
+detail.addEventListener("touchend",e=>{if(tx===null)return; const t=e.changedTouches[0], dx=t.clientX-tx, dy=t.clientY-ty; tx=null; if(Math.abs(dx)>60&&Math.abs(dx)>1.6*Math.abs(dy)) step(dx<0?1:-1);},{passive:true});
+function syncPills(){const v=visible(); pills.forEach((p,j)=>{p.setAttribute("aria-current",j===current?"true":"false"); p.classList.toggle("dim",!v.includes(j));});
+  const p=pills[current], l=p.offsetLeft-mbYears.offsetLeft, r=l+p.offsetWidth; if(l<mbYears.scrollLeft+8||r>mbYears.scrollLeft+mbYears.clientWidth-8) mbYears.scrollLeft=Math.max(0,l-mbYears.clientWidth/2+p.offsetWidth/2);
+  const pp=v.indexOf(current); document.getElementById("mbPrev").disabled=pp<=0; document.getElementById("mbNext").disabled=pp<0||pp>=v.length-1;}
 
 /* Initial selection from hash */
 function fromHash(){const y=parseInt((location.hash||"").replace("#y",""),10); const i=M.findIndex(m=>m.y===y); return i>=0?i:0}
