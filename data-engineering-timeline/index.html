@@ -158,6 +158,29 @@ tbody th{font-family:var(--mono);font-size:12.5px;font-weight:600;width:16%}
 @media (max-width:460px){.lrow{grid-template-columns:minmax(0,1fr)}}
 .fnote{font-size:12px;line-height:1.5;max-width:90ch}
 .fnote strong{color:var(--ink);font-weight:600}
+/* story acts */
+.acts{display:grid;gap:12px;padding-block:6px 22px}
+.acts h2.kicker{font-family:var(--mono);font-size:12px;font-weight:400}
+.actlist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.act{background:var(--surface);border:1px solid var(--line);border-top:4px solid var(--c);border-radius:8px;padding:14px 16px;display:grid;gap:6px;align-content:start;min-width:0}
+.actn{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--c);font-weight:600}
+.act h3{font-size:1.05rem;font-weight:700}
+.act p{margin:0;font-size:14px;color:var(--muted);line-height:1.45}
+.actgo{justify-self:start;margin-top:2px;font:600 13px/1 var(--body);color:var(--c);background:none;border:0;padding:4px 0;cursor:pointer}
+.actgo:hover{text-decoration:underline}
+@media (max-width:980px){.actlist{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.actlist{grid-template-columns:minmax(0,1fr)}.act p{font-size:13.5px}}
+/* cause and effect in detail */
+.chain{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.chaincol{display:grid;gap:12px;align-content:start;min-width:0}
+.link{border:1px solid var(--line);border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0;text-align:left;background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
+.link:hover{border-color:var(--muted)}
+.link .lk{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.link .lt{font-family:var(--display);font-weight:700;font-size:1.05rem;line-height:1.2}
+.link .lt i{font-style:normal;font-family:var(--mono);font-size:.85em;margin-right:6px}
+.link p{margin:0;font-size:14px;color:var(--muted)}
+.link.static{cursor:default}
+@media (max-width:760px){.chain{grid-template-columns:minmax(0,1fr)}}
 footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:grid;gap:6px}
 
 @media (max-width:760px){
@@ -177,14 +200,17 @@ footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px
     <div class="byline" id="byline" hidden></div>
   </header>
 
-  <div class="controls" role="group" aria-label="Legend and filters">
-    <div class="row" aria-label="Eras">
-      <span class="lab">Eras</span>
-      <span class="era-key"><i style="background:var(--etl)"></i>Traditional ETL &amp; Warehousing</span>
-      <span class="era-key"><i style="background:var(--hadoop)"></i>Big Data &amp; Hadoop</span>
-      <span class="era-key"><i style="background:var(--cloud)"></i>Cloud &amp; Modern Data Stack</span>
-      <span class="era-key"><i style="background:var(--lake)"></i>Lakehouse &amp; AI</span>
-    </div>
+  <section class="acts" aria-labelledby="acts-h">
+    <h2 id="acts-h" class="kicker">The story in four acts</h2>
+    <ol class="actlist">
+      <li class="act" style="--c:var(--etl)"><span class="actn">Act I · ~2006–2013</span><h3>Traditional ETL &amp; Warehousing</h3><p>Data was copied nightly into one carefully modeled warehouse. Reliable, but rigid, expensive, and unable to absorb web‑scale data.</p><button class="actgo" data-y="2007">Start at 2007 →</button></li>
+      <li class="act" style="--c:var(--hadoop)"><span class="actn">Act II · ~2006–2018</span><h3>Big Data &amp; Hadoop</h3><p>Hadoop and Spark made huge, messy data processable on cheap machines. Clusters were hard to run, and lakes turned into swamps.</p><button class="actgo" data-y="2006">Start at 2006 →</button></li>
+      <li class="act" style="--c:var(--cloud)"><span class="actn">Act III · ~2012–2023</span><h3>Cloud &amp; Modern Data Stack</h3><p>Cloud warehouses made scale elastic and SQL the default again; ELT and dbt turned pipelines into code. Tool sprawl and bills followed.</p><button class="actgo" data-y="2012">Start at 2012 →</button></li>
+      <li class="act" style="--c:var(--lake)"><span class="actn">Act IV · ~2019–now</span><h3>Lakehouse &amp; AI</h3><p>Open table formats brought warehouse reliability to cheap storage. Now that governed data has to be trustworthy enough for AI agents.</p><button class="actgo" data-y="2019">Start at 2019 →</button></li>
+    </ol>
+  </section>
+
+  <div class="controls" role="group" aria-label="Filters">
     <div class="row" id="filters">
       <span class="lab">Filter</span>
       <button class="chip" id="f-all" data-f="all" aria-pressed="true">All</button>
@@ -498,6 +524,42 @@ const M = [
  src:[["Business Wire: Fivetran + dbt Labs complete merger (June 2026)","https://www.businesswire.com/news/home/20260601514374/en/Fivetran-dbt-Labs-Complete"],["Flexera: Snowflake Summit 2026 recap","https://www.flexera.com/blog/perspectives/snowflake-summit-2026/"],["Atlan: Databricks Data + AI Summit 2026 announcements","https://atlan.com/know/ai-agent/databricks/databricks-data-ai-summit-2026-announcements/"]]}
 ];
 
+/* Cause and effect: what each milestone set up next */
+const LEADS = {
+ 2006:[2008,"Hadoop worked, but writing Java MapReduce for every question was too hard for analysts. Hive put SQL on top."],
+ 2007:[2012,"MPP and columnar designs proved themselves on appliances, then moved to the cloud as Redshift, with no box to buy."],
+ 2008:[2010,"Every Hive query was a slow batch MapReduce job. Spark kept data in memory between steps instead."],
+ 2009:[2013,"Running Hadoop in production exposed its limits. YARN opened clusters to new engines and Parquet fixed slow scans."],
+ 2010:[2014,"Spark grew from a research project into a stable 1.0 and replaced MapReduce as the default engine."],
+ 2011:[2017,"The Lambda architecture meant writing everything twice. Streaming had to become correct enough to stand alone."],
+ 2012:[2015,"Fixed Redshift clusters were still hard to resize. Snowflake separated storage from compute."],
+ 2013:[2019,"Parquet lakes still could not update or delete rows safely. Table formats added transactions."],
+ 2014:[2021,"Spark plus open file formats made it possible to run warehouse-style workloads on the lake itself."],
+ 2015:[2016,"With elastic warehouse compute, transforming data inside the warehouse became cheap enough to be the default."],
+ 2016:[2020,"Managed loaders, a cloud warehouse and dbt combined into the modern data stack blueprint."],
+ 2017:[2019,"Reliable streams needed reliable destinations. Table formats gave streaming writes ACID tables on object storage."],
+ 2018:[2022,"Regulation made data ownership and quality everyone's problem, which grew into contracts and observability."],
+ 2019:[2021,"With transactions on object storage, one copy of data could serve both BI and ML. That is the lakehouse."],
+ 2020:[2022,"More tools and more models meant more silent breakages, which drove data contracts and observability."],
+ 2021:[2024,"Many engines on one lake raised a new question: who owns the metadata and permissions? Catalogs answered it."],
+ 2022:[2023,"Trustworthy data became urgent once LLMs started answering questions from it."],
+ 2023:[2025,"LLM features grew into agents that need tool access and live operational state."],
+ 2024:[2026,"Open tables plus shared catalogs gave platforms governed data that agents can use safely."],
+ 2025:[2026,"Agent workloads pushed vendors to consolidate ingestion, transformation, storage and governance into one platform."]
+};
+function chainHTML(m){
+  const from = Object.keys(LEADS).map(Number).filter(y=>LEADS[y][0]===m.y);
+  const idx = y=>M.findIndex(x=>x.y===y);
+  let left = from.length
+    ? from.map(y=>'<button class="link" data-go="'+y+'"><span class="lk">← Grew out of</span><span class="lt"><i>'+y+'</i>'+esc(M[idx(y)].title)+'</span><p>'+esc(LEADS[y][1])+'</p></button>').join("")
+    : '<div class="link static"><span class="lk">← Starting point</span><span class="lt">Where this timeline begins</span><p>The status quo of 2006: nightly ETL into an on-premises warehouse.</p></div>';
+  const L = LEADS[m.y];
+  let right = L
+    ? '<button class="link" data-go="'+L[0]+'"><span class="lk">Led to →</span><span class="lt"><i>'+L[0]+'</i>'+esc(M[idx(L[0])].title)+'</span><p>'+esc(L[1])+'</p></button>'
+    : '<div class="link static"><span class="lk">Led to →</span><span class="lt">Still unfolding</span><p>This is where the story stands as of October 2026.</p></div>';
+  return '<div class="chaincol">'+left+'</div><div class="chaincol">'+right+'</div>';
+}
+
 const grid = document.getElementById("grid");
 const detail = document.getElementById("detail");
 const strip = document.getElementById("strip");
@@ -552,9 +614,11 @@ function select(i, scrollDetail){
      '<div class="f"><h3>Problem it solved</h3><p>'+esc(m.problem)+'</p></div>'+
      '<div class="f"><h3>Impact on daily work</h3><p>'+esc(m.impact)+'</p></div>'+
      '<div class="f wide complaint"><h3>Biggest limitation or complaint</h3><p>'+esc(m.complaint)+'</p></div>'+
+     '<div class="f wide"><h3>Cause and effect</h3><div class="chain">'+chainHTML(m)+'</div></div>'+
      '<div class="f wide sources"><h3>Sources</h3><ul>'+m.src.map(s=>'<li><a href="'+esc(s[1])+'" target="_blank" rel="noopener">'+esc(s[0])+'</a></li>').join("")+'</ul></div>'+
    '</div>'+
    '<div class="prevnext"><button id="prevBtn" '+(prev===null?'disabled':'')+'>← '+(prev!==null?M[prev].y:'')+'</button><button id="nextBtn" '+(next===null?'disabled':'')+'>'+(next!==null?M[next].y:'')+' →</button></div>';
+  detail.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>select(M.findIndex(x=>x.y===+b.dataset.go),true));
   document.getElementById("prevBtn").onclick=()=>{if(prev!==null)select(prev,true)};
   document.getElementById("nextBtn").onclick=()=>{if(next!==null)select(next,true)};
   try{ if(location.hash!=="#y"+m.y) history.replaceState(null,"","#y"+m.y) }catch(e){}
@@ -571,6 +635,7 @@ document.querySelectorAll("#filters .chip").forEach(c=>c.addEventListener("click
   if(!v.includes(current) && v.length) select(v[0],false); else select(current,false);
 }));
 
+document.querySelectorAll(".actgo").forEach(b=>b.addEventListener("click",()=>{const i=M.findIndex(x=>x.y===+b.dataset.y); select(i,false); document.getElementById("strip").scrollIntoView({block:"start",behavior:"smooth"}); btns[i].focus({preventScroll:true});}));
 document.getElementById("scrollL").onclick=()=>strip.scrollBy({left:-strip.clientWidth*0.8,behavior:"smooth"});
 document.getElementById("scrollR").onclick=()=>strip.scrollBy({left:strip.clientWidth*0.8,behavior:"smooth"});
 
