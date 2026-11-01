@@ -128,6 +128,34 @@ th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px sol
 tr:last-child td,tr:last-child th{border-bottom:0}
 thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
 tbody th{font-family:var(--mono);font-size:12.5px;font-weight:600;width:16%}
+/* ledger: Then vs Now comparison */
+.ledger{display:grid;gap:0}
+.lhead{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr);gap:14px;padding:0 0 8px;font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.lhead .h-then{color:var(--etl);font-weight:600}.lhead .h-now{color:var(--lake);font-weight:600}
+.lrows{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.lrow{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:stretch;padding:16px 0;border-top:1px solid var(--line)}
+.lkey{display:grid;gap:4px;align-content:start;min-width:0}
+.lnum{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.06em}
+.lkey h3{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.punch{margin:0;font-family:var(--display);font-size:clamp(1.15rem,2.2vw,1.5rem);font-weight:700;line-height:1.15;letter-spacing:-.01em;color:var(--muted);text-wrap:balance}
+.punch strong{color:var(--ink);font-weight:800}
+.punch span[aria-hidden]{color:var(--lake);margin-inline:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.lcell{border-radius:8px;padding:12px 14px;display:grid;gap:6px;align-content:start;min-width:0;font-size:14.5px;line-height:1.45;transition:transform .2s}
+.lcell p{margin:0}
+.lcell.then{background:var(--etl-soft);color:var(--ink)}
+.lcell.now{background:var(--lake-soft);color:var(--ink);box-shadow:inset 3px 0 0 var(--lake)}
+.lcell.then{box-shadow:inset 3px 0 0 var(--etl)}
+.ltag{display:none;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.08em}
+.then .ltag{color:var(--etl)}.now .ltag{color:var(--lake)}
+.lrow:hover .lcell.now{transform:translateX(3px)}
+@media (max-width:760px){
+  .lhead{display:none}
+  .lrow{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  .lkey{grid-column:1/-1}
+  .ltag{display:block}
+}
+@media (max-width:460px){.lrow{grid-template-columns:minmax(0,1fr)}}
 footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:grid;gap:6px}
 
 @media (max-width:760px){
@@ -203,21 +231,55 @@ footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px
         </ol>
       </div>
     </div>
-    <div class="tablewrap">
-      <table>
-        <thead><tr><th scope="col">Dimension</th><th scope="col">2006</th><th scope="col">2026</th></tr></thead>
-        <tbody>
-          <tr><th scope="row">Pattern</th><td>ETL: transform on an ETL server, then load</td><td>ELT plus streaming: land raw, transform in the platform</td></tr>
-          <tr><th scope="row">Freshness</th><td>T+1 (yesterday's data by 8 a.m., if the batch finished)</td><td>Hours to seconds, chosen per use case</td></tr>
-          <tr><th scope="row">Storage</th><td>Proprietary warehouse format on SAN; compute and storage coupled</td><td>Open files and table formats on object storage; several engines can read the same tables</td></tr>
-          <tr><th scope="row">Orchestration</th><td>cron, Control‑M, Autosys, or the ETL tool's scheduler</td><td>Code‑defined DAGs (Airflow, Dagster) or platform workflows, with retries and backfills</td></tr>
-          <tr><th scope="row">Quality</th><td>Row counts, reconciliation queries, users reporting wrong numbers</td><td>Tests in CI, contracts with producers, anomaly monitors, column‑level lineage</td></tr>
-          <tr><th scope="row">How changes ship</th><td>Change request, GUI mapping edits, migration weekend</td><td>Pull request, code review, automated deploy; increasingly drafted by an AI assistant</td></tr>
-          <tr><th scope="row">Cost model</th><td>Up‑front hardware and licenses, capacity planned years ahead</td><td>Usage‑based compute; FinOps dashboards and query cost reviews</td></tr>
-          <tr><th scope="row">Consumers</th><td>Analysts and executives reading reports</td><td>Analysts, data scientists, applications, ML models and AI agents</td></tr>
-          <tr><th scope="row">Main headache</th><td>Batch window overruns and rigid schemas</td><td>Tool sprawl, cloud bills, and proving data is trustworthy enough for AI</td></tr>
-        </tbody>
-      </table>
+    <div class="ledger" role="region" aria-label="2006 versus 2026, dimension by dimension">
+      <div class="lhead" aria-hidden="true"><span>Dimension</span><span class="h-then">2006</span><span class="h-now">2026</span></div>
+      <ol class="lrows">
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">01</span><h3>Pattern</h3><p class="punch">Transform first <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>land first</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>ETL: transform on a separate ETL server, then load</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>ELT plus streaming: land raw data, transform inside the platform</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">02</span><h3>Freshness</h3><p class="punch">Overnight <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>on demand</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>T+1: yesterday&#x27;s data by 8 a.m., if the batch finished</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Hours to seconds, chosen per use case</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">03</span><h3>Storage</h3><p class="punch">Locked box <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>open tables</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Proprietary warehouse format on a SAN; compute and storage bought together</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Open file and table formats on object storage; many engines read the same tables</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">04</span><h3>Orchestration</h3><p class="punch">Cron <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>code</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>cron, Control‑M, Autosys or the ETL tool&#x27;s own scheduler</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Code‑defined DAGs (Airflow, Dagster) or platform workflows, with retries and backfills</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">05</span><h3>Quality</h3><p class="punch">Hope <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>proof</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Row counts, reconciliation queries, and users reporting wrong numbers</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Tests in CI, contracts with producers, anomaly monitors, column‑level lineage</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">06</span><h3>Shipping changes</h3><p class="punch">Migration weekend <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>pull request</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Change request, GUI mapping edits, a scheduled migration weekend</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Pull request, code review, automated deploy; often drafted with an AI assistant</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">07</span><h3>Cost model</h3><p class="punch">Capex <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>metered</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Up‑front hardware and licenses, capacity planned years ahead</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Usage‑based compute, watched through FinOps dashboards and query cost reviews</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">08</span><h3>Consumers</h3><p class="punch">Reports <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>agents</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Analysts and executives reading reports</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Analysts, data scientists, applications, ML models and AI agents</p></div>
+        </li>
+        <li class="lrow">
+          <div class="lkey"><span class="lnum">09</span><h3>Main headache</h3><p class="punch">Batch windows <span aria-hidden="true">→</span><span class="sr"> to </span> <strong>bills &amp; trust</strong></p></div>
+          <div class="lcell then"><span class="ltag">2006</span><p>Batch windows that overran and schemas that resisted change</p></div>
+          <div class="lcell now"><span class="ltag">2026</span><p>Tool sprawl, cloud bills, and proving data is trustworthy enough for AI</p></div>
+        </li>
+      </ol>
     </div>
   </section>
 
