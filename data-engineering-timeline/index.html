@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="author" content="Rajanikant Vellaturi">
+<title>Data Engineering, 2006–2026</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="An interactive timeline of how data engineering changed from 2006 to 2026: ETL and warehouses, Hadoop, Spark, cloud warehouses, the modern data stack, lakehouses and AI-ready platforms.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+html{color-scheme:light}
+
+/* Layout: a horizontal "run log" of years under four overlapping era bands; the selected year opens a spec sheet below; Then vs Now closes the page. */
+:root{
+  --bg:#f3f5f6; --surface:#ffffff; --sunk:#e7ebee; --ink:#14212b; --muted:#56656f; --line:#cfd7dc;
+  --focus:#0b6bcb;
+  --etl:#b4561f; --hadoop:#7e8a12; --cloud:#2b72b8; --lake:#13897b;
+  --etl-soft:#f6e3d6; --hadoop-soft:#ecefd2; --cloud-soft:#dce9f5; --lake-soft:#d5eeea;
+  --display:"Bricolage Grotesque", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --body:"Public Sans", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --col:136px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f161b; --surface:#172129; --sunk:#1e2a33; --ink:#e4ebef; --muted:#9aa9b3; --line:#2d3b45; --focus:#6cb3ff;
+  --etl:#e98a52; --hadoop:#bccb45; --cloud:#6aa9e8; --lake:#46c4b2;
+  --etl-soft:#3a2416; --hadoop-soft:#2c3112; --cloud-soft:#16293b; --lake-soft:#123430; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f161b; --surface:#172129; --sunk:#1e2a33; --ink:#e4ebef; --muted:#9aa9b3; --line:#2d3b45; --focus:#6cb3ff;
+  --etl:#e98a52; --hadoop:#bccb45; --cloud:#6aa9e8; --lake:#46c4b2;
+  --etl-soft:#3a2416; --hadoop-soft:#2c3112; --cloud-soft:#16293b; --lake-soft:#123430; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0}
+a{color:var(--cloud)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
+.mono{font-family:var(--mono)}
+
+header.top{padding-block:40px 20px;display:grid;gap:14px}
+.kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font-size:clamp(2rem,5.4vw,3.6rem);font-weight:800;letter-spacing:-.02em;max-width:18ch}
+h1 .range{color:var(--muted);font-weight:500}
+.lede{max-width:66ch;color:var(--muted);margin:0}
+.byline{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:15px}
+.byline strong{font-weight:600}
+
+/* legend + filters */
+.controls{display:grid;gap:14px;padding-block:14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .lab{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);min-width:76px}
+.era-key{display:inline-flex;align-items:center;gap:7px;font-size:14px;margin-right:10px}
+.era-key i{width:22px;height:8px;border-radius:2px;display:inline-block}
+.chip{font:600 13px/1 var(--body);padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip:hover{border-color:var(--muted)}
+.note{font-size:13px;color:var(--muted);margin:0}
+
+/* timeline strip */
+.strip{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-block:8px 18px;-webkit-overflow-scrolling:touch}
+.grid{display:grid;grid-template-columns:repeat(21,var(--col));column-gap:0;width:max-content;position:relative}
+.band{height:15px;border-radius:3px;margin-block:3px}
+.band span{position:sticky;left:8px;display:inline-block;padding-left:8px;font-family:var(--mono);font-size:10.5px;letter-spacing:.04em;white-space:nowrap;line-height:15px;color:var(--bg);font-weight:600}
+.band.fade-l span,.band.fade-lr span{margin-left:56px}
+.band.etl{background:var(--etl)} .band.hadoop{background:var(--hadoop)} .band.cloud{background:var(--cloud)} .band.lake{background:var(--lake)}
+.band.fade-l{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 60px);mask-image:linear-gradient(90deg,transparent 0,#000 60px)}
+.band.fade-r{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 60px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 60px),transparent)}
+.band.fade-lr{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 60px,#000 calc(100% - 60px),transparent);mask-image:linear-gradient(90deg,transparent 0,#000 60px,#000 calc(100% - 60px),transparent)}
+.axis{grid-column:1/-1;height:1px;background:var(--line);margin-block:10px 0}
+.yr{scroll-snap-align:start;appearance:none;border:0;background:transparent;color:inherit;text-align:left;padding:10px 10px 12px;cursor:pointer;display:grid;gap:6px;align-content:start;border-left:1px dashed var(--line);font:inherit;min-height:150px;transition:opacity .2s, background .2s}
+.yr .y{font-family:var(--mono);font-weight:600;font-size:15px;display:flex;align-items:center;gap:7px;font-variant-numeric:tabular-nums}
+.yr .dot{width:11px;height:11px;border-radius:50%;flex:none}
+.yr .t{font-family:var(--display);font-weight:700;font-size:15.5px;line-height:1.18}
+.yr .cats{display:flex;flex-wrap:wrap;gap:3px}
+.yr .cats b{font:600 9.5px/1 var(--mono);letter-spacing:.04em;text-transform:uppercase;padding:3px 4px;border-radius:3px;background:var(--sunk);color:var(--muted)}
+.yr:hover{background:var(--surface)}
+.yr[aria-selected="true"]{background:var(--surface);box-shadow:inset 0 -3px 0 var(--sel,var(--ink))}
+.yr.dim{opacity:.28}
+.scrollhint{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.navbtns{display:flex;gap:6px}
+.navbtns button{font:600 13px/1 var(--mono);padding:8px 11px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+
+/* detail */
+.detail{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:clamp(18px,3vw,32px);display:grid;gap:22px;margin-block:8px 40px;scroll-margin-top:16px}
+.dhead{display:grid;gap:8px}
+.dhead .meta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.erapill{padding:4px 8px;border-radius:4px;font-weight:600;letter-spacing:.03em}
+.dhead h2{font-size:clamp(1.6rem,3.6vw,2.4rem);font-weight:800;letter-spacing:-.015em}
+.dhead .yearbig{font-family:var(--mono);font-size:14px;font-weight:600}
+.dates{font-size:14.5px;background:var(--sunk);border-radius:6px;padding:10px 14px;margin:0}
+.dates b{font-family:var(--mono);font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:2px}
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 36px}
+.f{min-width:0}
+.f h3{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:6px}
+.f p{margin:0;max-width:62ch}
+.f.wide{grid-column:1/-1}
+.tools{display:flex;flex-wrap:wrap;gap:6px}
+.tool{font-size:13.5px;padding:5px 9px;border-radius:5px;border:1px solid var(--line);display:inline-flex;gap:6px;align-items:center}
+.tool small{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.complaint{border-left:3px solid var(--etl);padding-left:12px}
+.sources ul{margin:0;padding-left:18px;display:grid;gap:4px;font-size:14.5px}
+.prevnext{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:14px}
+.prevnext button{font:600 14px/1.2 var(--body);background:none;border:0;color:var(--cloud);cursor:pointer;padding:6px 0}
+.prevnext button[disabled]{color:var(--muted);cursor:default;opacity:.5}
+
+/* then vs now */
+section.tvn{padding-block:20px 48px;border-top:1px solid var(--line);display:grid;gap:18px}
+section.tvn h2{font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:800}
+.flows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.flow{border-radius:10px;padding:18px;display:grid;gap:10px;align-content:start;min-width:0}
+.flow.then{background:var(--etl-soft)} .flow.now{background:var(--lake-soft)}
+.flow h3{font-size:1.25rem;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+.flow h3 small{font-family:var(--mono);font-size:12px;font-weight:400;color:var(--muted)}
+.flow ol{list-style:none;margin:0;padding:0;display:grid;gap:0}
+.flow li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;font-size:14.5px;padding-block:7px;position:relative}
+.flow li::before{content:"";width:10px;height:10px;border-radius:2px;margin-top:6px;margin-left:6px;background:var(--c)}
+.flow li:not(:last-child)::after{content:"";position:absolute;left:10px;top:24px;bottom:-8px;width:2px;background:var(--c);opacity:.4}
+.flow.then li{--c:var(--etl)} .flow.now li{--c:var(--lake)}
+.flow li b{font-weight:600}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.5px}
+th,td{text-align:left;vertical-align:top;padding:11px 14px;border-bottom:1px solid var(--line)}
+tr:last-child td,tr:last-child th{border-bottom:0}
+thead th{font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+tbody th{font-family:var(--mono);font-size:12.5px;font-weight:600;width:16%}
+footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:grid;gap:6px}
+
+@media (max-width:760px){
+  .cols,.flows{grid-template-columns:minmax(0,1fr)}
+  :root{--col:124px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="kicker">Twenty years of pipelines · 2006 → 2026</div>
+    <h1>How data engineering changed <span class="range">2006–2026</span></h1>
+    <p class="lede">One milestone per year, from nightly ETL into an on‑premises warehouse to governed lakehouses that AI agents query. Tap a year to see what shifted, which tools defined it, what it fixed, how it changed the job, and what people complained about.</p>
+    <div class="byline" id="byline" hidden></div>
+  </header>
+
+  <div class="controls" role="group" aria-label="Legend and filters">
+    <div class="row" aria-label="Eras">
+      <span class="lab">Eras</span>
+      <span class="era-key"><i style="background:var(--etl)"></i>Traditional ETL &amp; Warehousing</span>
+      <span class="era-key"><i style="background:var(--hadoop)"></i>Big Data &amp; Hadoop</span>
+      <span class="era-key"><i style="background:var(--cloud)"></i>Cloud &amp; Modern Data Stack</span>
+      <span class="era-key"><i style="background:var(--lake)"></i>Lakehouse &amp; AI</span>
+    </div>
+    <div class="row" id="filters">
+      <span class="lab">Filter</span>
+      <button class="chip" id="f-all" data-f="all" aria-pressed="true">All</button>
+      <button class="chip" id="f-proc" data-f="proc" aria-pressed="false">Processing &amp; streaming</button>
+      <button class="chip" id="f-store" data-f="store" aria-pressed="false">Storage &amp; architecture</button>
+      <button class="chip" id="f-trans" data-f="trans" aria-pressed="false">Transformation &amp; orchestration</button>
+      <button class="chip" id="f-qual" data-f="qual" aria-pressed="false">Quality &amp; governance</button>
+      <button class="chip" id="f-ai" data-f="ai" aria-pressed="false">AI &amp; automation</button>
+    </div>
+    <p class="note">Era bands are broad trends with soft edges. Adoption varied a lot: plenty of teams ran Informatica and Teradata well into the cloud era, and many never ran Hadoop at all.</p>
+  </div>
+
+  <div class="scrollhint">
+    <span class="note" id="filternote">Scroll sideways through the years. Showing all 21 milestones.</span>
+    <div class="navbtns"><button id="scrollL" aria-label="Scroll timeline left">←</button><button id="scrollR" aria-label="Scroll timeline right">→</button></div>
+  </div>
+  <div class="strip" id="strip">
+    <div class="grid" id="grid" role="tablist" aria-label="Years"></div>
+  </div>
+
+  <article class="detail" id="detail" role="tabpanel" aria-live="polite"></article>
+
+  <section class="tvn" aria-labelledby="tvn-h">
+    <div class="kicker">Then vs. Now</div>
+    <h2 id="tvn-h">A typical pipeline in 2006 and in 2026</h2>
+    <p class="note" style="max-width:70ch">Both columns describe a mid‑sized company's analytics pipeline. Neither is universal; they are the common shape of each period.</p>
+    <div class="flows">
+      <div class="flow then">
+        <h3>2006 <small>nightly batch, on‑prem</small></h3>
+        <ol>
+          <li><span><b>Sources:</b> Oracle or DB2 OLTP systems, mainframe extracts, CSV files dropped on an FTP server.</span></li>
+          <li><span><b>Extract + transform:</b> Informatica PowerCenter, DataStage or SSIS jobs on a dedicated ETL server; transforms happen before load.</span></li>
+          <li><span><b>Staging:</b> relational staging schema, truncated and reloaded each night.</span></li>
+          <li><span><b>Warehouse:</b> Kimball star schemas in Teradata, Oracle or SQL Server, sized for peak load years ahead.</span></li>
+          <li><span><b>Serve:</b> OLAP cubes (Essbase, SSAS) and reports in Business Objects, Cognos or MicroStrategy.</span></li>
+        </ol>
+      </div>
+      <div class="flow now">
+        <h3>2026 <small>continuous, cloud, governed</small></h3>
+        <ol>
+          <li><span><b>Sources:</b> SaaS APIs, Postgres/MySQL change data capture, event streams, documents and logs.</span></li>
+          <li><span><b>Ingest:</b> managed connectors (Fivetran, Airbyte) and CDC/streams (Debezium, Kafka, Kinesis) land raw data with schema tracking.</span></li>
+          <li><span><b>Store:</b> Parquet in object storage under an open table format (Iceberg or Delta), registered in a catalog (Unity Catalog, Polaris, Glue) that holds permissions and lineage.</span></li>
+          <li><span><b>Transform:</b> SQL models in dbt or Spark jobs, bronze→silver→gold layers, tests and data contracts enforced in CI.</span></li>
+          <li><span><b>Serve:</b> BI and a governed metrics/semantic layer, ML features, vector indexes, and AI agents querying through MCP or platform APIs.</span></li>
+        </ol>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th scope="col">Dimension</th><th scope="col">2006</th><th scope="col">2026</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Pattern</th><td>ETL: transform on an ETL server, then load</td><td>ELT plus streaming: land raw, transform in the platform</td></tr>
+          <tr><th scope="row">Freshness</th><td>T+1 (yesterday's data by 8 a.m., if the batch finished)</td><td>Hours to seconds, chosen per use case</td></tr>
+          <tr><th scope="row">Storage</th><td>Proprietary warehouse format on SAN; compute and storage coupled</td><td>Open files and table formats on object storage; several engines can read the same tables</td></tr>
+          <tr><th scope="row">Orchestration</th><td>cron, Control‑M, Autosys, or the ETL tool's scheduler</td><td>Code‑defined DAGs (Airflow, Dagster) or platform workflows, with retries and backfills</td></tr>
+          <tr><th scope="row">Quality</th><td>Row counts, reconciliation queries, users reporting wrong numbers</td><td>Tests in CI, contracts with producers, anomaly monitors, column‑level lineage</td></tr>
+          <tr><th scope="row">How changes ship</th><td>Change request, GUI mapping edits, migration weekend</td><td>Pull request, code review, automated deploy; increasingly drafted by an AI assistant</td></tr>
+          <tr><th scope="row">Cost model</th><td>Up‑front hardware and licenses, capacity planned years ahead</td><td>Usage‑based compute; FinOps dashboards and query cost reviews</td></tr>
+          <tr><th scope="row">Consumers</th><td>Analysts and executives reading reports</td><td>Analysts, data scientists, applications, ML models and AI agents</td></tr>
+          <tr><th scope="row">Main headache</th><td>Batch window overruns and rigid schemas</td><td>Tool sprawl, cloud bills, and proving data is trustworthy enough for AI</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <span>Dates checked against vendor announcements, project release notes, papers and press coverage as of October 31, 2026. Each milestone lists its sources. "Initial release" and "widespread adoption" are kept separate where they differ.</span>
+    <span id="footby"></span>
+  </footer>
+</div>
+
+<script>
+/* ---- Author (filled in at publish time) ---- */
+const AUTHOR = { name: "Rajanikant Vellaturi", linkedin: "https://www.linkedin.com/in/rajanikant-vellaturi/" };
+
+const ERAS = {
+  etl:   {name:"Traditional ETL & Warehousing", c:"var(--etl)",   soft:"var(--etl-soft)"},
+  hadoop:{name:"Big Data & Hadoop",            c:"var(--hadoop)",soft:"var(--hadoop-soft)"},
+  cloud: {name:"Cloud & Modern Data Stack",    c:"var(--cloud)", soft:"var(--cloud-soft)"},
+  lake:  {name:"Lakehouse & AI",               c:"var(--lake)",  soft:"var(--lake-soft)"}
+};
+const CATS = {proc:"Processing & streaming", store:"Storage & architecture", trans:"Transformation & orchestration", qual:"Quality & governance", ai:"AI & automation"};
+const CAT_SHORT = {proc:"Proc", store:"Storage", trans:"Transform", qual:"Quality", ai:"AI"};
+/* Era bands: [era, startYear, endYear, fade] */
+const BANDS = [["etl",2006,2013,"r"],["hadoop",2006,2018,"lr"],["cloud",2012,2023,"lr"],["lake",2019,2026,"l"]];
+
+const OSS="Open source", COM="Commercial", CLD="Cloud service";
+const M = [
+{y:2006, era:"hadoop", cats:["store","proc"], title:"Hadoop and S3 are born",
+ shift:"Doug Cutting's distributed file system and MapReduce code moved out of the Nutch web crawler into its own Apache project, Hadoop, with Yahoo! funding the work. The same month Hadoop got its name, Amazon launched S3, cheap object storage over HTTP. Neither changed enterprise data work that year, but together they set up the two ideas of the next decade: scale out on commodity machines, and keep storage separate from everything else.",
+ tools:[["Apache Hadoop (HDFS + MapReduce)",OSS],["Amazon S3",CLD],["Informatica PowerCenter",COM],["Teradata",COM],["SSIS",COM]],
+ problem:"Web-scale data (crawls, clickstreams, logs) was too big and too unstructured to load into a licensed warehouse at a sane price.",
+ impact:"For most data engineers, very little at first. The job was still ETL mappings, stored procedures and nightly batch windows. A handful of web companies started writing Java MapReduce jobs against raw log files.",
+ complaint:"MapReduce meant hand-writing Java mappers and reducers for simple aggregations, and early Hadoop was hard to operate.",
+ dates:"Hadoop became its own Apache Lucene subproject in early 2006; first releases (0.1.x) came that spring. S3 launched March 14, 2006. Enterprise Hadoop adoption came years later, roughly 2010–2014.",
+ src:[["AWS: Announcing Amazon S3 (March 2006)","https://aws.amazon.com/about-aws/whats-new/2006/03/announcing-amazon-s3---simple-storage-service"],["AWS News Blog: Twenty years of Amazon S3","https://aws.amazon.com/blogs/aws/twenty-years-of-amazon-s3-and-building-whats-next"],["Hadoop project site, 0.2.x release docs (2006)","https://svn.apache.org/repos/asf/hadoop/common/tags/release-0.2.1/site/index.pdf"]]},
+
+{y:2007, era:"etl", cats:["store"], title:"MPP and columnar analytic databases go mainstream",
+ shift:"The warehouse world answered growing data volumes with massively parallel, shared-nothing appliances and column stores. Netezza filed for its IPO and listed in 2007; Vertica (the commercial C-Store) won early customers such as AOL; Greenplum and Aster Data pitched MPP on commodity hardware.",
+ tools:[["Netezza",COM],["Vertica",COM],["Greenplum",COM],["Teradata",COM],["Oracle Exadata (2008)",COM]],
+ problem:"Row-oriented warehouses on general-purpose servers were too slow for scans over billions of rows.",
+ impact:"Engineers learned distribution keys, sort orders and compression encodings. Query tuning moved from indexes to data layout, a skill that carried straight into Redshift and Snowflake later.",
+ complaint:"Appliances were expensive, capacity came in large hardware increments, and you were locked into one vendor's box.",
+ dates:"Netezza filed for its IPO in early 2007 and began trading that summer. Columnar ideas (C-Store paper, 2005) took about a decade to become the default for analytics.",
+ src:[["Netezza (Wikipedia)","https://en.wikipedia.org/wiki/Netezza"],["The Register: Netezza IPO (2007)","https://www.theregister.com/2007/03/27/netezza_ipo/"],["InformationWeek: AOL taps Vertica","https://www.informationweek.com/data-management/aol-taps-vertica-database"]]},
+
+{y:2008, era:"hadoop", cats:["trans","proc"], title:"Hive puts SQL on Hadoop",
+ shift:"Facebook built Hive so analysts could query HDFS with a SQL dialect (HiveQL) compiled to MapReduce, backed by a metastore that tracked tables, partitions and schemas. Facebook open-sourced it in 2008, and it joined Apache. Yahoo!'s Pig offered a dataflow language for the same goal. Hadoop itself became a top-level Apache project the same year.",
+ tools:[["Apache Hive",OSS],["Apache Pig",OSS],["Hive Metastore",OSS]],
+ problem:"Only Java developers could get answers out of Hadoop.",
+ impact:"Partitioned tables over files became the standard data-lake layout. The Hive Metastore became the de facto catalog for a decade and is still the ancestor of today's lakehouse catalogs.",
+ complaint:"Every query was a batch MapReduce job: minutes of latency even for small results, and no transactions or updates.",
+ dates:"Open-sourced in 2008; Facebook described running a petabyte-scale warehouse on it in 2009. Broad enterprise use followed with Hadoop distributions in 2010–2013.",
+ src:[["Facebook Engineering: Hive, a petabyte-scale data warehouse using Hadoop (2009)","https://engineering.fb.com/2009/06/10/web/hive-a-petabyte-scale-data-warehouse-using-hadoop/"],["Hive paper, ICDE 2010 (PDF)","https://courses.cs.washington.edu/courses/csep544/21sp/papers/hive-icde-2010.pdf"]]},
+
+{y:2009, era:"hadoop", cats:["store","trans"], title:"Hadoop goes enterprise with Cloudera's distribution",
+ shift:"Cloudera raised its Series A and released Cloudera's Distribution for Hadoop (CDH), a tested bundle of Hadoop, Hive, Pig and HBase with support. Companion projects for moving data in and out (Sqoop for relational databases) and scheduling followed. Hadoop became something a bank could buy.",
+ tools:[["Cloudera CDH",COM],["Apache HBase",OSS],["Apache Sqoop",OSS],["Apache Oozie",OSS],["MongoDB",OSS]],
+ problem:"Assembling compatible versions of a dozen Apache projects yourself was risky and unsupported.",
+ impact:"Data engineers became cluster operators: capacity planning, NameNode high availability, Kerberos, and version upgrades. Moving data from Oracle into HDFS with Sqoop became a daily task.",
+ complaint:"Clusters were heavy to run; most companies did not have the data volumes to justify one.",
+ dates:"CDH launched in March 2009. Hortonworks (2011) and MapR followed; enterprise Hadoop peaked around 2014–2016 before declining in favor of cloud services.",
+ src:[["InfoQ: Cloudera Hadoop distribution (March 2009)","https://www.infoq.com/news/2009/03/cloudera-hadoop"],["TechCrunch: Cloudera raises $5M for Hadoop commercialization","https://techcrunch.com/2009/03/16/cloudera-raises-5-million-series-a-round-for-hadoop-commercialization/"]]},
+
+{y:2010, era:"hadoop", cats:["proc"], title:"Spark is open-sourced; Dremel shows interactive SQL at scale",
+ shift:"Matei Zaharia's Spark, started at Berkeley's AMPLab in 2009, was open-sourced in 2010. Its resilient distributed datasets kept working sets in memory instead of writing to disk between every MapReduce step. The same year, Google published the Dremel paper: columnar, nested storage plus a tree of servers to run SQL over petabytes in seconds, the design behind BigQuery.",
+ tools:[["Apache Spark (early)",OSS],["Google Dremel / BigQuery",CLD],["Apache Mesos",OSS]],
+ problem:"Iterative jobs (machine learning, multi-step ETL) were extremely slow on MapReduce, and interactive analysis on Hadoop was impossible.",
+ impact:"Little day-to-day change yet, but it set the direction: in-memory engines for pipelines, and columnar, serverless SQL for analysis.",
+ complaint:"Spark was a research project: small community, Scala-only APIs, and not production-hardened.",
+ dates:"Spark was open-sourced in 2010, entered the Apache Incubator in 2013, and reached 1.0 in 2014. Dremel's paper appeared at VLDB 2010.",
+ src:[["Apache Spark: project history","https://spark.apache.org/history.html"]]},
+
+{y:2011, era:"hadoop", cats:["proc"], title:"Kafka and Storm bring streams into the picture",
+ shift:"LinkedIn open-sourced Kafka, a distributed, partitioned, replicated commit log for high-volume event data. Twitter open-sourced Storm for real-time stream processing. Together they introduced the idea of a log as the central nervous system of a data platform.",
+ tools:[["Apache Kafka",OSS],["Apache Storm",OSS],["Flume / Scribe",OSS]],
+ problem:"Point-to-point integrations between dozens of systems, and batch-only processing that left data hours or days old.",
+ impact:"Engineers started designing around topics, partitions, offsets and consumer groups. The Lambda architecture (a batch layer plus a speed layer) became common.",
+ complaint:"Lambda meant writing and maintaining the same logic twice, once for batch and once for streaming, and reconciling the results.",
+ dates:"Kafka was open-sourced in early 2011 and graduated from the Apache Incubator in 2012. It became near-universal in the mid-to-late 2010s.",
+ src:[["Apache Kafka (Wikipedia)","https://en.wikipedia.org/wiki/Apache_Kafka"],["RTInsights: The technical evolution of Apache Kafka","https://www.rtinsights.com/?p=56867"]]},
+
+{y:2012, era:"cloud", cats:["store"], title:"Amazon Redshift opens the cloud warehouse era",
+ shift:"AWS announced Redshift at the first re:Invent: a managed, columnar MPP warehouse (built on ParAccel technology) priced by the hour, with no hardware to buy. Google's BigQuery offered a serverless alternative built on Dremel.",
+ tools:[["Amazon Redshift",CLD],["Google BigQuery",CLD]],
+ problem:"Warehouse capacity required months of procurement and a large up-front check.",
+ impact:"A small team could stand up a petabyte-capable warehouse in an afternoon. Engineers began loading S3 files with COPY, and cloud cost started to replace license negotiation as a concern.",
+ complaint:"Early Redshift still coupled compute and storage in a fixed cluster: resizing was slow, VACUUM and distribution-key tuning were manual, and concurrency was limited.",
+ dates:"Announced November 28, 2012; generally available February 2013. It was the fastest-growing AWS service at the time, and cloud warehouses became the default for new projects by roughly 2016–2018.",
+ src:[["AWS: Amazon Redshift available to all customers (Feb 2013)","https://aws.amazon.com/about-aws/whats-new/2013/02/14/amazon-redshift-available-to-all-customers"],["The Register: Amazon launches Redshift (Nov 2012)","https://www.theregister.com/2012/11/28/amazon_aws_redshift_data_warehousing/"],["Amazon Science: Redshift, ten years of reinvention","https://amazon.science/latest-news/amazon-redshift-ten-years-of-continuous-reinvention"]]},
+
+{y:2013, era:"hadoop", cats:["store","proc"], title:"Parquet and YARN modernize the Hadoop stack",
+ shift:"Twitter and Cloudera released Parquet 1.0, an open columnar file format based on the Dremel paper's nested encoding. Hadoop 2 shipped YARN, which split resource management from MapReduce so other engines (Spark, Tez, later Flink) could share a cluster.",
+ tools:[["Apache Parquet",OSS],["Hadoop 2 / YARN",OSS],["Apache ORC",OSS],["Impala",OSS]],
+ problem:"Row-oriented text and SequenceFiles made analytic scans slow, and Hadoop could run only MapReduce well.",
+ impact:"Choosing a file format, compression codec and partition scheme became a core design decision. Parquet is still the default storage format under nearly every lakehouse in 2026.",
+ complaint:"Lots of small files, schema drift between partitions, and no way to update or delete rows safely.",
+ dates:"Parquet 1.0 was announced in July 2013 and became an Apache top-level project in 2015. Hadoop 2.2 (YARN GA) shipped in October 2013.",
+ src:[["Twitter: Announcing Parquet 1.0 (2013)","https://blog.twitter.com/2013/announcing-parquet-10-columnar-storage-for-hadoop"],["Apache Parquet (Wikipedia)","https://en.wikipedia.org/wiki/Apache_Parquet"]]},
+
+{y:2014, era:"hadoop", cats:["proc"], title:"Spark 1.0 becomes the general-purpose engine",
+ shift:"Apache Spark released 1.0 with stable APIs and Spark SQL, months after becoming a top-level Apache project. One engine now covered batch ETL, SQL, streaming (micro-batches), ML and graph work, in Scala, Java and Python. Databricks, founded by Spark's creators in 2013, offered it as a managed service.",
+ tools:[["Apache Spark",OSS],["Databricks",COM],["Spark SQL",OSS],["PySpark",OSS]],
+ problem:"MapReduce was slow and verbose, and each workload needed a different engine.",
+ impact:"PySpark and DataFrames replaced Java MapReduce for pipeline work. Engineers started thinking in terms of shuffles, partitions, caching and executor memory.",
+ complaint:"Out-of-memory errors, data skew and opaque tuning (executor sizes, shuffle partitions) ate a lot of engineering time.",
+ dates:"Spark 1.0 released May 30, 2014. Spark replaced MapReduce as the default Hadoop processing engine over 2015–2017; Spark 2.0 (2016) unified around DataFrames.",
+ src:[["Databricks: Announcing Spark 1.0","https://www.databricks.com/blog/2014/05/30/announcing-spark-1-0.html"],["Apache Software Foundation: Spark v1.0 announcement","https://blogsarchive.apache.org/foundation/entry/the_apache_software_foundation_announces57"]]},
+
+{y:2015, era:"cloud", cats:["trans","store"], title:"Airflow (pipelines as code) and Snowflake (elastic warehouse)",
+ shift:"Airbnb open-sourced Airflow, which defines workflows as Python DAGs with dependencies, retries, backfills and a UI. The same month Snowflake became generally available: a cloud-native warehouse that separated storage from compute so independent virtual warehouses could scale up, down and to zero.",
+ tools:[["Apache Airflow",OSS],["Luigi (Spotify)",OSS],["Snowflake",COM]],
+ problem:"Pipelines lived in cron and GUI schedulers with no dependency logic, no history and no code review. Warehouses could not scale compute independently or isolate workloads.",
+ impact:"Orchestration became software engineering: version control, tests, templated DAGs. Separate warehouses for loading, transformation and BI ended most fights over concurrency.",
+ complaint:"Airflow's scheduler was slow and fragile at scale, and passing data between tasks was awkward. Snowflake's ease made runaway credit spend a new failure mode.",
+ dates:"Airflow was open-sourced in June 2015, entered the Apache Incubator in 2016, and graduated in 2019. Snowflake reached GA on June 23, 2015; its mainstream adoption came around 2018–2020.",
+ src:[["Airbnb Engineering: Airflow, a workflow management platform","https://medium.com/airbnb-engineering/46318b977fd8"],["Airflow project history","https://airflow.apache.org/_sources/project.rst.txt"],["SiliconANGLE: Snowflake launches into general availability (June 2015)","https://siliconangle.com/2015/06/23/snowflake-launches-its-cloud-based-data-warehouse-into-general-availability"]]},
+
+{y:2016, era:"cloud", cats:["trans"], title:"dbt and the shift from ETL to ELT",
+ shift:"Fishtown Analytics released dbt (data build tool): transformations written as SELECT statements, templated with Jinja, compiled and run inside the warehouse, with dependencies, tests and documentation generated from the code. With cheap warehouse compute and managed loaders (Fivetran, Stitch), teams could load raw data first and transform later.",
+ tools:[["dbt",OSS],["Fivetran",COM],["Stitch",COM],["Looker",COM]],
+ problem:"Business logic was buried in ETL tool mappings and stored procedures that analysts could not read, test or change.",
+ impact:"It created the analytics engineer role. Transformations moved into git with pull requests, tests (unique, not_null, relationships) and lineage graphs. Data engineers increasingly focused on ingestion, platforms and tooling.",
+ complaint:"Projects grew to thousands of models with tangled dependencies, long full rebuilds and rising warehouse bills.",
+ dates:"First released in 2016. Widespread adoption came around 2019–2021 alongside the 'modern data stack'.",
+ src:[["dbt Labs: On two years of dbt","https://www.getdbt.com/blog/on-two-years-of-dbt"],["Orchestra: dbt history and key milestones","https://www.getorchestra.io/guides/dbt-data-build-tool-history-key-milestones-impact"]]},
+
+{y:2017, era:"hadoop", cats:["proc"], title:"Streaming matures: exactly-once Kafka and stateful engines",
+ shift:"Kafka 0.11 added idempotent producers and transactions, giving exactly-once semantics for read-process-write pipelines, and Kafka 1.0 followed in November. Apache Flink (1.0 in March 2016) offered event-time processing, watermarks and checkpointed state. Beam 2.0 brought the Dataflow model's unified batch/stream API.",
+ tools:[["Apache Kafka + Kafka Streams",OSS],["Apache Flink",OSS],["Apache Beam / Google Dataflow",OSS],["Confluent Platform",COM]],
+ problem:"Streaming results were approximate: duplicates and lost events forced a parallel batch layer to correct them.",
+ impact:"The Kappa architecture (one streaming path, reprocess by replaying the log) became credible. Engineers had to learn event time, windows, late data and state stores.",
+ complaint:"Stateful streaming is hard to operate: state migrations, backpressure, and debugging is far harder than in batch.",
+ dates:"Kafka exactly-once shipped in 0.11 (June 2017); Flink 1.0 was released March 8, 2016. Stateful streaming stayed a specialist practice; most analytics remained batch or micro-batch.",
+ src:[["SiliconANGLE: Apache Kafka gets exactly-once delivery (2017)","https://siliconangle.com/2017/08/25/apache-kafka-gets-exactly-message-delivery-thats-big-deal"],["Confluent: Exactly-once semantics are possible","https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/"],["InfoQ: Apache Flink 1.0.0 released","https://www.infoq.com/news/2016/03/Apache-Flink-1.0.0-Released"]]},
+
+{y:2018, era:"cloud", cats:["qual"], title:"GDPR makes governance an engineering problem",
+ shift:"The EU's General Data Protection Regulation became enforceable on May 25, 2018. Right-to-erasure and data-subject requests meant pipelines had to find and delete a person's records everywhere, and prove it. Data catalogs, PII classification and data-testing tools started to look essential instead of optional.",
+ tools:[["Great Expectations",OSS],["Apache Atlas",OSS],["Collibra / Alation",COM],["Amundsen (Lyft, 2019)",OSS]],
+ problem:"Nobody could answer 'where is this customer's data, who can see it, and where did it come from?'",
+ impact:"Engineers added tagging, masking, access policies and deletion jobs. Deleting rows in immutable Parquet data lakes was painful, which pushed demand for table formats with row-level deletes.",
+ complaint:"Compliance work landed on data teams as unplanned toil, and early catalogs went stale quickly.",
+ dates:"GDPR took effect May 25, 2018 (adopted 2016). California's CCPA followed in 2020. Mature catalog and lineage tooling spread over 2019–2023.",
+ src:[["IT Pro: GDPR gets a deadline: 25 May 2018","https://itpro.com/data-protection/26476/gdpr-gets-a-deadline-25-may-2018"],["Mayer Brown: The GDPR one year on","https://www.mayerbrown.com/zh-hans/insights/publications/2019/05/the-gdpr-one-year-on"]]},
+
+{y:2019, era:"lake", cats:["store"], title:"Open table formats: Delta Lake is open-sourced",
+ shift:"Databricks open-sourced Delta Lake: a transaction log over Parquet files that gives ACID commits, schema enforcement, time travel, and MERGE/UPDATE/DELETE on object storage. Netflix's Apache Iceberg and Uber's Apache Hudi solved the same problem and were both in the Apache Incubator by early 2019.",
+ tools:[["Delta Lake",OSS],["Apache Iceberg",OSS],["Apache Hudi",OSS]],
+ problem:"Data lakes had no transactions: concurrent writers corrupted tables, partial job failures left half-written data, and updates meant rewriting whole partitions.",
+ impact:"Upserts, CDC merges and GDPR deletes became single statements. Engineers began managing compaction, snapshot expiry and file sizing as routine maintenance.",
+ complaint:"Three competing formats split the ecosystem, and engine support was uneven for years.",
+ dates:"Delta Lake was open-sourced April 24, 2019. Iceberg entered the Apache Incubator in late 2018 and graduated in 2020. Broad multi-engine adoption of table formats came around 2022–2024.",
+ src:[["BigDATAwire: Databricks donates Delta code to open source (April 2019)","https://www.bigdatawire.com/2019/04/24/databricks-donates-delta-code-to-open-source"],["TechTarget: Databricks open sources Delta Lake","https://www.techtarget.com/searchenterpriseai/news/252462218/Databricks-open-sources-data-lake-building-tool-Databricks-Delta-Lake"]]},
+
+{y:2020, era:"cloud", cats:["store","trans"], title:"The modern data stack peaks; Snowflake's record IPO",
+ shift:"Snowflake's IPO was the largest software IPO ever at the time and confirmed the cloud warehouse as the center of analytics. The 'modern data stack' (managed ingestion, cloud warehouse, dbt, BI, plus reverse ETL, catalogs and observability) became the standard blueprint for new teams.",
+ tools:[["Snowflake",COM],["BigQuery",CLD],["Fivetran / Airbyte",COM],["dbt",OSS],["Looker / Mode",COM],["Census / Hightouch",COM]],
+ problem:"Building and maintaining a basic analytics platform took a large engineering team.",
+ impact:"A two-person team could have production analytics running in weeks. Data engineers spent less time on ingestion code and more on modeling, platform choices and cost.",
+ complaint:"Tool sprawl: a dozen vendors, a dozen bills, integration glue between them, and warehouse costs that grew with every new model.",
+ dates:"Snowflake priced its IPO at $120 and began trading on September 16, 2020. The modern-data-stack wave peaked around 2020–2022; consolidation followed.",
+ src:[["BigDATAwire: Snowflake pops in largest-ever software IPO","https://bigdatawire.com/2020/09/16/snowflake-pops-in-largest-ever-software-ipo"],["Renaissance Capital: Snowflake prices $3.4B IPO","https://www.renaissancecapital.com/IPO-Center/News/71189/Let-it-SNOW-Data-unicorn-Snowflake-prices-$3.4-billion-IPO-above-the-range-"]]},
+
+{y:2021, era:"lake", cats:["store"], title:"The lakehouse is formalized",
+ shift:"The CIDR 2021 paper by Armbrust, Ghodsi, Xin and Zaharia argued for a lakehouse: warehouse features (transactions, indexing, caching, governance) built on open formats in cheap object storage, so BI, SQL and ML share one copy of data instead of copying it from a lake into a warehouse.",
+ tools:[["Databricks SQL",COM],["Delta Lake",OSS],["Trino / Starburst",OSS],["Dremio",COM]],
+ problem:"Two-tier architectures (data lake for ML plus warehouse for BI) meant duplicated data, stale copies and two governance models.",
+ impact:"The medallion pattern (bronze, silver, gold) spread. Engineers debated warehouse-first versus lake-first architectures, and multiple engines over the same tables became normal.",
+ complaint:"Early lakehouse SQL performance and BI concurrency lagged warehouses, and governance across engines was immature.",
+ dates:"The paper appeared at CIDR in January 2021 (Databricks introduced the term in 2020). Warehouse vendors adopted open formats and the distinction blurred over 2022–2024.",
+ src:[["CIDR 2021: Lakehouse, a new generation of open platforms","https://vldb.org/cidrdb/2021/lakehouse-a-new-generation-of-open-platforms-that-unify-data-warehousing-and-advanced-analytics.html"],["Databricks Research: Lakehouse paper","https://www.databricks.com/research/lakehouse-a-new-generation-of-open-platforms-that-unify-data-warehousing-and-advanced-analytics"]]},
+
+{y:2022, era:"cloud", cats:["qual"], title:"Data contracts and data observability",
+ shift:"Silent breakages from upstream schema changes pushed teams to treat data like an API. 'Data contracts' (schemas, semantics and SLAs agreed with producers and checked in CI) became a widely discussed practice, while observability platforms watched freshness, volume, schema and distribution anomalies, and OpenLineage standardized lineage events.",
+ tools:[["Monte Carlo",COM],["Great Expectations",OSS],["Soda",OSS],["OpenLineage / Marquez",OSS],["dbt tests & model contracts",OSS]],
+ problem:"Dashboards broke because an application team renamed a column, and the data team found out from an executive.",
+ impact:"Engineers started writing schema checks at the source, alerting on freshness SLAs, and negotiating ownership with application teams. Data downtime became a measured metric.",
+ complaint:"Contracts need producer buy-in that is organizational, not technical, and anomaly monitors generate alert fatigue.",
+ dates:"The data-contracts idea spread through 2022 writing and talks (notably by Chad Sanderson). dbt added model contracts in 2023. Adoption remains uneven in 2026.",
+ src:[["Data Engineering Podcast: Data contracts (ep. 352)","https://www.dataengineeringpodcast.com/great-expectations-data-contracts-episode-352"],["Analytics Engineering Podcast: Why you'll need data contracts (Chad Sanderson)","https://metacast.app/podcast/the-analytics-engineering-podcast/H1VjJGZp/why-you-ll-need-data-contracts-w-chad-sanderson-prukalpa/o7psf5Ld"]]},
+
+{y:2023, era:"lake", cats:["ai"], title:"Generative AI arrives inside the data platform",
+ shift:"After ChatGPT's launch in late 2022, data platforms raced to bring LLMs to the data. Databricks bought MosaicML for $1.3B; Snowflake introduced Cortex LLM functions; vector search and embedding pipelines appeared in warehouses, Postgres (pgvector) and dedicated vector databases. Retrieval-augmented generation (RAG) made unstructured documents a first-class pipeline input.",
+ tools:[["Databricks Mosaic AI",COM],["Snowflake Cortex",COM],["pgvector",OSS],["Pinecone / Weaviate",COM],["LangChain / LlamaIndex",OSS]],
+ problem:"Text, PDFs and tickets held much of an organization's knowledge but sat outside analytics pipelines.",
+ impact:"New pipeline types: document parsing, chunking, embedding, indexing and refresh. SQL users could call LLM functions inline. Engineers began using code assistants for SQL and pipeline code.",
+ complaint:"Hallucinated answers on top of poorly governed data, unpredictable inference costs, and few ways to evaluate quality.",
+ dates:"ChatGPT launched November 30, 2022; MosaicML deal announced June 26, 2023; Snowflake Cortex announced November 2023. Production RAG and AI pipelines spread during 2024–2025.",
+ src:[["SiliconANGLE: Databricks acquires MosaicML ($1.3B, June 2023)","https://siliconangle.com/2023/06/26/databricks-acquires-generative-ai-startup-mosaicml-1-3b-deal"],["Fortune: Databricks buying MosaicML","https://fortune.com/2023/06/27/databricks-says-its-buying-mosaicml-in-a-bid-to-democratize-a-i/"]]},
+
+{y:2024, era:"lake", cats:["store","qual"], title:"Iceberg wins; catalogs become the control plane",
+ shift:"In one June week, Snowflake announced Polaris, an open Iceberg REST catalog, and Databricks bought Tabular (founded by Iceberg's creators) and open-sourced Unity Catalog. In December AWS launched S3 Tables with built-in Iceberg support. The format war cooled; the fight moved to catalogs that hold permissions, lineage and metadata across engines.",
+ tools:[["Apache Iceberg",OSS],["Apache Polaris",OSS],["Unity Catalog",OSS],["Amazon S3 Tables",CLD],["Delta UniForm",OSS]],
+ problem:"Each engine had its own copy of metadata and permissions, so 'open' data was still locked to a vendor's catalog.",
+ impact:"Engineers could point Spark, Snowflake, Trino, DuckDB and others at the same Iceberg tables. Catalog choice and REST catalog configuration became architecture decisions.",
+ complaint:"Interoperability was real but partial: feature gaps between engines, multiple 'open' catalogs, and confusing write-ownership rules.",
+ dates:"Tabular acquisition announced June 4, 2024; Polaris and Unity Catalog open-sourcing announced in June 2024; S3 Tables launched December 3, 2024.",
+ src:[["SiliconANGLE: Databricks to acquire Tabular (June 2024)","https://siliconangle.com/?p=658968"],["Starburst: Snowflake, Databricks, Tabular and Iceberg","https://www.starburst.io/blog/snowflake-databricks-tabular-iceberg/"],["SiliconANGLE: AWS adds Apache Iceberg support to S3 (Dec 2024)","https://siliconangle.com/2024/12/03/aws-expands-amazon-s3-features-support-apache-iceberg-metadata-management"]]},
+
+{y:2025, era:"lake", cats:["ai","store"], title:"AI agents and Postgres move into the data platform",
+ shift:"The Model Context Protocol (MCP), released by Anthropic in November 2024, gave AI agents a standard way to connect to tools and data, and data vendors shipped MCP servers through 2025. Platforms also brought operational databases in-house for agent workloads: Databricks bought Neon (about $1B) and announced Lakebase, a serverless Postgres; Snowflake bought Crunchy Data (about $250M). Fivetran and dbt Labs announced a merger in October.",
+ tools:[["Model Context Protocol",OSS],["Databricks Lakebase / Agent Bricks",COM],["Snowflake Postgres / Cortex Agents",COM],["Neon",COM],["Claude Code and other coding agents",COM]],
+ problem:"Agents need low-latency transactional state and governed access to analytics data; copying data between OLTP and OLAP systems added latency and risk.",
+ impact:"Engineers began exposing curated tables and metrics to agents, setting tool permissions, and using coding agents to write and review pipeline code. Semantic layers mattered again, as context for AI.",
+ complaint:"Security and governance for autonomous agents lagged the hype; agents acting on stale or ambiguous data could do real damage.",
+ dates:"MCP: November 25, 2024. Neon deal announced May 2025; Lakebase announced June 2025 (preview); Crunchy Data deal announced June 2025. Agent-driven data work was early-stage through 2025.",
+ src:[["Model Context Protocol (Wikipedia)","https://en.wikipedia.org/wiki/Model_Context_Protocol"],["SiliconANGLE: Databricks unveils Lakebase (June 2025)","https://siliconangle.com/?p=699987"],["Motley Fool: Snowflake's $250M Crunchy Data acquisition","https://www.fool.com/investing/2025/06/04/snowflakes-smart-250-million-acquisition/"]]},
+
+{y:2026, era:"lake", cats:["ai","trans","qual"], title:"Agentic data platforms and stack consolidation",
+ shift:"The modern data stack consolidated around AI. Fivetran and dbt Labs completed their merger on June 1, and announced the dbt Fusion engine runtime will be open-sourced as dbt Core v2.0 (alpha, Apache 2.0). At their June conferences, Snowflake made Apache Iceberg v3 and AI agent identity generally available, and Databricks made Lakebase generally available and announced LTAP, which aims to put transactional, analytical and streaming work on one storage and governance layer. Governance now covers agents, models and MCP tools as well as tables.",
+ tools:[["Fivetran + dbt Labs",COM],["dbt Core v2.0 (alpha)",OSS],["Apache Iceberg v3",OSS],["Databricks Lakebase / Unity AI Gateway",COM],["Snowflake agents & Iceberg storage",COM]],
+ problem:"AI agents need data that is fresh, consistently defined and access-controlled; stitched-together stacks could not guarantee that.",
+ impact:"Engineers spend more time on semantic definitions, permissions for agents, evaluation, and cost controls, and less on hand-writing ingestion and boilerplate SQL that agents can draft.",
+ complaint:"Fewer, larger vendors raise lock-in and pricing concerns, many announced features are still preview or 'coming soon', and trust in agent output is hard to verify.",
+ dates:"Merger completed June 1, 2026; Snowflake Summit June 1–4, 2026; Databricks Data + AI Summit June 15–18, 2026. LTAP was announced as coming soon; check each feature's GA status before relying on it.",
+ src:[["Business Wire: Fivetran + dbt Labs complete merger (June 2026)","https://www.businesswire.com/news/home/20260601514374/en/Fivetran-dbt-Labs-Complete"],["Flexera: Snowflake Summit 2026 recap","https://www.flexera.com/blog/perspectives/snowflake-summit-2026/"],["Atlan: Databricks Data + AI Summit 2026 announcements","https://atlan.com/know/ai-agent/databricks/databricks-data-ai-summit-2026-announcements/"]]}
+];
+
+const grid = document.getElementById("grid");
+const detail = document.getElementById("detail");
+const strip = document.getElementById("strip");
+let filter = "all", current = 0;
+
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+
+/* Era bands */
+BANDS.forEach(([e,a,b,fade],i)=>{
+  const d=document.createElement("div");
+  d.className="band "+e+" fade-"+fade;
+  d.style.gridColumn=(a-2006+1)+" / "+(b-2006+2);
+  d.style.gridRow=String(i+1);
+  d.innerHTML='<span>'+esc(ERAS[e].name)+'</span>';
+  d.title=ERAS[e].name+" (broad trend, roughly "+a+"–"+(b===2026?"present":b)+")";
+  grid.appendChild(d);
+});
+const ax=document.createElement("div"); ax.className="axis"; ax.style.gridRow="5"; grid.appendChild(ax);
+
+/* Year buttons */
+const btns = M.map((m,i)=>{
+  const b=document.createElement("button");
+  b.className="yr"; b.id="yr-"+m.y; b.setAttribute("role","tab"); b.style.gridRow="6";
+  b.style.setProperty("--sel", ERAS[m.era].c);
+  b.innerHTML='<span class="y"><span class="dot" style="background:'+ERAS[m.era].c+'"></span>'+m.y+'</span><span class="t">'+esc(m.title)+'</span><span class="cats">'+m.cats.map(c=>'<b>'+CAT_SHORT[c]+'</b>').join("")+'</span>';
+  b.addEventListener("click",()=>select(i,true));
+  b.addEventListener("keydown",ev=>{
+    if(ev.key==="ArrowRight"){ev.preventDefault(); move(1)}
+    if(ev.key==="ArrowLeft"){ev.preventDefault(); move(-1)}
+  });
+  grid.appendChild(b); return b;
+});
+
+function visible(){return M.map((m,i)=>i).filter(i=>filter==="all"||M[i].cats.includes(filter))}
+function move(d){const v=visible(); let p=v.indexOf(current); if(p<0)p=0; const n=v[Math.max(0,Math.min(v.length-1,p+d))]; select(n,false); btns[n].focus()}
+
+function select(i, scrollDetail){
+  current=i; const m=M[i], E=ERAS[m.era];
+  btns.forEach((b,j)=>{b.setAttribute("aria-selected", j===i?"true":"false"); b.tabIndex = j===i?0:-1});
+  btns[i].scrollIntoView({block:"nearest",inline:"nearest",behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+  const v=visible(), p=v.indexOf(i);
+  const prev = p>0? v[p-1] : null, next = p>=0 && p<v.length-1 ? v[p+1] : null;
+  detail.setAttribute("aria-labelledby","yr-"+m.y);
+  detail.innerHTML =
+   '<div class="dhead"><div class="meta"><span class="yearbig">'+m.y+'</span><span class="erapill" style="background:'+E.soft+';color:'+E.c+'">'+esc(E.name)+'</span>'+m.cats.map(c=>'<span>· '+esc(CATS[c])+'</span>').join("")+'</div><h2>'+esc(m.title)+'</h2></div>'+
+   '<p class="dates"><b>Release vs. adoption</b>'+esc(m.dates)+'</p>'+
+   '<div class="cols">'+
+     '<div class="f wide"><h3>Key technology or architectural shift</h3><p>'+esc(m.shift)+'</p></div>'+
+     '<div class="f wide"><h3>Representative tools</h3><div class="tools">'+m.tools.map(t=>'<span class="tool">'+esc(t[0])+'<small>'+esc(t[1])+'</small></span>').join("")+'</div></div>'+
+     '<div class="f"><h3>Problem it solved</h3><p>'+esc(m.problem)+'</p></div>'+
+     '<div class="f"><h3>Impact on daily work</h3><p>'+esc(m.impact)+'</p></div>'+
+     '<div class="f wide complaint"><h3>Biggest limitation or complaint</h3><p>'+esc(m.complaint)+'</p></div>'+
+     '<div class="f wide sources"><h3>Sources</h3><ul>'+m.src.map(s=>'<li><a href="'+esc(s[1])+'" target="_blank" rel="noopener">'+esc(s[0])+'</a></li>').join("")+'</ul></div>'+
+   '</div>'+
+   '<div class="prevnext"><button id="prevBtn" '+(prev===null?'disabled':'')+'>← '+(prev!==null?M[prev].y:'')+'</button><button id="nextBtn" '+(next===null?'disabled':'')+'>'+(next!==null?M[next].y:'')+' →</button></div>';
+  document.getElementById("prevBtn").onclick=()=>{if(prev!==null)select(prev,true)};
+  document.getElementById("nextBtn").onclick=()=>{if(next!==null)select(next,true)};
+  try{ if(location.hash!=="#y"+m.y) history.replaceState(null,"","#y"+m.y) }catch(e){}
+  if(scrollDetail){ const r=detail.getBoundingClientRect(); if(r.top>innerHeight*0.6||r.top<0) detail.scrollIntoView({block:"start",behavior:"smooth"}) }
+}
+
+/* Filters */
+document.querySelectorAll("#filters .chip").forEach(c=>c.addEventListener("click",()=>{
+  filter=c.dataset.f;
+  document.querySelectorAll("#filters .chip").forEach(x=>x.setAttribute("aria-pressed", x===c?"true":"false"));
+  const v=visible();
+  btns.forEach((b,i)=>b.classList.toggle("dim", !v.includes(i)));
+  document.getElementById("filternote").textContent = filter==="all" ? "Scroll sideways through the years. Showing all 21 milestones." : "Showing "+v.length+" of 21 milestones tagged "+CATS[filter]+". Other years are dimmed but still selectable.";
+  if(!v.includes(current) && v.length) select(v[0],false); else select(current,false);
+}));
+
+document.getElementById("scrollL").onclick=()=>strip.scrollBy({left:-strip.clientWidth*0.8,behavior:"smooth"});
+document.getElementById("scrollR").onclick=()=>strip.scrollBy({left:strip.clientWidth*0.8,behavior:"smooth"});
+
+/* Author byline */
+if(AUTHOR.name){
+  const by=document.getElementById("byline");
+  by.innerHTML='<span>By <strong>'+esc(AUTHOR.name)+'</strong></span>'+(AUTHOR.linkedin?'<a href="'+esc(AUTHOR.linkedin)+'" target="_blank" rel="noopener">LinkedIn ↗</a>':'');
+  by.hidden=false;
+  document.getElementById("footby").innerHTML='© 2026 '+esc(AUTHOR.name)+(AUTHOR.linkedin?' · <a href="'+esc(AUTHOR.linkedin)+'" target="_blank" rel="noopener">LinkedIn</a>':'');
+}
+
+/* Initial selection from hash */
+function fromHash(){const y=parseInt((location.hash||"").replace("#y",""),10); const i=M.findIndex(m=>m.y===y); return i>=0?i:0}
+select(fromHash(),false);
+addEventListener("hashchange",()=>select(fromHash(),false));
+</script>
+
+</body>
+</html>
