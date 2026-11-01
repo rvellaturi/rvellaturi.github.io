@@ -34,6 +34,7 @@ html{color-scheme:light}
   --etl-soft:#3a2416; --hadoop-soft:#2c3112; --cloud-soft:#16293b; --lake-soft:#123430; color-scheme:dark}
 
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55;margin:0}
 .wrap{max-width:1180px;margin:0 auto;padding-left:max(16px, env(safe-area-inset-left, 0px));padding-right:max(16px, env(safe-area-inset-right, 0px));padding-block:0}
 a{color:var(--cloud)}
@@ -41,9 +42,9 @@ a{color:var(--cloud)}
 h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.1}
 .mono{font-family:var(--mono)}
 
-header.top{padding-block:40px 20px;display:grid;gap:14px}
+header.top{padding-block:32px 16px;display:grid;gap:14px}
 .kicker{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
-h1{font-size:clamp(2rem,5.4vw,3.6rem);font-weight:800;letter-spacing:-.02em;max-width:18ch}
+h1{font-size:clamp(2rem,5vw,3.1rem);font-weight:800;letter-spacing:-.02em;max-width:18ch}
 h1 .range{color:var(--muted);font-weight:500}
 .lede{max-width:66ch;color:var(--muted);margin:0}
 .byline{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:baseline;font-size:15px}
@@ -61,10 +62,10 @@ h1 .range{color:var(--muted);font-weight:500}
 .note{font-size:13px;color:var(--muted);margin:0}
 
 /* timeline strip */
-.strip{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-block:14px 18px;-webkit-overflow-scrolling:touch}
+.strip{overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-block:10px 14px;-webkit-overflow-scrolling:touch}
 .grid{display:grid;grid-template-columns:repeat(21,var(--col));column-gap:0;width:max-content;position:relative}
-.band{height:26px;border-radius:4px;margin-block:5px;display:flex;align-items:center}
-.band span{position:sticky;left:8px;display:inline-block;padding:0 10px;font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;white-space:nowrap;line-height:26px;color:var(--bg);font-weight:600}
+.band{height:22px;border-radius:4px;margin-block:3px;display:flex;align-items:center}
+.band span{position:sticky;left:8px;display:inline-block;padding:0 10px;font-family:var(--mono);font-size:12.5px;letter-spacing:.03em;white-space:nowrap;line-height:22px;color:var(--bg);font-weight:600}
 .band span em{font-style:normal;font-weight:400;opacity:.85;margin-left:6px}
 .band.fade-l span,.band.fade-lr span{margin-left:64px}
 .band.etl{background:var(--etl)} .band.hadoop{background:var(--hadoop)} .band.cloud{background:var(--cloud)} .band.lake{background:var(--lake)}
@@ -181,6 +182,19 @@ tbody th{font-family:var(--mono);font-size:12.5px;font-weight:600;width:16%}
 .link p{margin:0;font-size:14px;color:var(--muted)}
 .link.static{cursor:default}
 @media (max-width:760px){.chain{grid-template-columns:minmax(0,1fr)}}
+/* compact toolbar */
+.toolbar{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px 14px;padding-block:14px 2px;border-top:1px solid var(--line)}
+.tbright{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.ftoggle{font-weight:600}
+.ftoggle[aria-expanded="true"],.ftoggle.on{border-color:var(--ink)}
+.fpanel{flex-basis:100%;padding-top:4px}
+.bandnote{font-size:12px;margin:-6px 0 16px;max-width:90ch}
+.bandnote strong{color:var(--ink);font-weight:600}
+@media (max-width:640px){
+  .actlist{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:80%;overflow-x:auto;scroll-snap-type:x mandatory;overscroll-behavior-x:contain;padding-bottom:6px}
+  .act{scroll-snap-align:start}
+  .acts h2.kicker::after{content:" · swipe";color:var(--muted)}
+}
 footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px;color:var(--muted);display:grid;gap:6px}
 
 @media (max-width:760px){
@@ -210,26 +224,25 @@ footer{padding-block:24px 48px;border-top:1px solid var(--line);font-size:13.5px
     </ol>
   </section>
 
-  <div class="controls" role="group" aria-label="Filters">
-    <div class="row" id="filters">
-      <span class="lab">Filter</span>
-      <button class="chip" id="f-all" data-f="all" aria-pressed="true">All</button>
+  <div class="toolbar" role="group" aria-label="Timeline controls">
+    <span class="note" id="filternote">21 milestones · scroll sideways or use the arrows</span>
+    <div class="tbright">
+      <button class="chip ftoggle" id="ftoggle" aria-expanded="false" aria-controls="filters">Filter: <span id="fcur">All topics</span> <span aria-hidden="true">▾</span></button>
+      <div class="navbtns"><button id="scrollL" aria-label="Scroll timeline left">←</button><button id="scrollR" aria-label="Scroll timeline right">→</button></div>
+    </div>
+    <div class="row fpanel" id="filters" hidden>
+      <button class="chip" id="f-all" data-f="all" aria-pressed="true">All topics</button>
       <button class="chip" id="f-proc" data-f="proc" aria-pressed="false">Processing &amp; streaming</button>
       <button class="chip" id="f-store" data-f="store" aria-pressed="false">Storage &amp; architecture</button>
       <button class="chip" id="f-trans" data-f="trans" aria-pressed="false">Transformation &amp; orchestration</button>
       <button class="chip" id="f-qual" data-f="qual" aria-pressed="false">Quality &amp; governance</button>
       <button class="chip" id="f-ai" data-f="ai" aria-pressed="false">AI &amp; automation</button>
     </div>
-    <p class="note"><strong style="color:var(--ink)">Note:</strong> Era bands are broad trends with soft edges. Adoption varied a lot: plenty of teams ran Informatica and Teradata well into the cloud era, and many never ran Hadoop at all.</p>
-  </div>
-
-  <div class="scrollhint">
-    <span class="note" id="filternote">Scroll sideways through the years. Showing all 21 milestones.</span>
-    <div class="navbtns"><button id="scrollL" aria-label="Scroll timeline left">←</button><button id="scrollR" aria-label="Scroll timeline right">→</button></div>
   </div>
   <div class="strip" id="strip">
     <div class="grid" id="grid" role="tablist" aria-label="Years"></div>
   </div>
+  <p class="note bandnote"><strong>Note:</strong> Era bands are broad trends with soft edges. Adoption varied a lot: plenty of teams ran Informatica and Teradata well into the cloud era, and many never ran Hadoop at all.</p>
 
   <article class="detail" id="detail" role="tabpanel" aria-live="polite"></article>
 
@@ -626,12 +639,17 @@ function select(i, scrollDetail){
 }
 
 /* Filters */
+const ftoggle=document.getElementById("ftoggle"), fpanel=document.getElementById("filters");
+ftoggle.addEventListener("click",()=>{const open=fpanel.hidden; fpanel.hidden=!open; ftoggle.setAttribute("aria-expanded",open?"true":"false"); if(open) fpanel.querySelector('[aria-pressed="true"]').focus();});
 document.querySelectorAll("#filters .chip").forEach(c=>c.addEventListener("click",()=>{
   filter=c.dataset.f;
   document.querySelectorAll("#filters .chip").forEach(x=>x.setAttribute("aria-pressed", x===c?"true":"false"));
   const v=visible();
   btns.forEach((b,i)=>b.classList.toggle("dim", !v.includes(i)));
-  document.getElementById("filternote").textContent = filter==="all" ? "Scroll sideways through the years. Showing all 21 milestones." : "Showing "+v.length+" of 21 milestones tagged "+CATS[filter]+". Other years are dimmed but still selectable.";
+  document.getElementById("fcur").textContent = filter==="all" ? "All topics" : CATS[filter];
+  ftoggle.classList.toggle("on", filter!=="all");
+  document.getElementById("filternote").textContent = filter==="all" ? "21 milestones · scroll sideways or use the arrows" : v.length+" of 21 milestones match · others are dimmed but still selectable";
+  fpanel.hidden=true; ftoggle.setAttribute("aria-expanded","false");
   if(!v.includes(current) && v.length) select(v[0],false); else select(current,false);
 }));
 
